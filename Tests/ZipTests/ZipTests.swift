@@ -267,7 +267,7 @@ final class ZipTests: XCTestCase {
 
     func testZipData() throws {
         let archiveFile1 = ArchiveFile(filename: "file1.txt", data: "Hello, World!".data(using: .utf8)!)
-        let archiveFile2 = ArchiveFile(filename: "file2.txt", data: "Hi Mom!".data(using: .utf8)!)
+        let archiveFile2 = ArchiveFile(filename: "file2.txt", data: NSData(data: "Hi Mom!".data(using: .utf8)!))
         let sandboxFolder = try autoRemovingSandbox()
         let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
         try Zip.zipData(archiveFiles: [archiveFile1, archiveFile2], zipFilePath: zipFilePath, password: nil, progress: nil)
