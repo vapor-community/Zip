@@ -19,6 +19,12 @@ public struct ArchiveFile {
         self.data = data
         self.modifiedTime = modifiedTime
     }
+
+    public init(filename: String, data: NSData, modifiedTime: Date? = nil) {
+        self.filename = filename
+        self.data = Data(referencing: data)
+        self.modifiedTime = modifiedTime
+    }
 }
 
 extension Zip {
