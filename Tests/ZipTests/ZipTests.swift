@@ -9,16 +9,7 @@
 import XCTest
 @testable import Zip
 
-class ZipTests: XCTestCase {
-
-    #if os(Linux)
-    private let tearDownBlocksQueue = DispatchQueue(label: "XCTest.XCTestCase.tearDownBlocks.lock")
-    private var tearDownBlocks: [() -> Void] = []
-    func addTeardownBlock(_ block: @escaping () -> Void) {
-        tearDownBlocksQueue.sync { tearDownBlocks.append(block) }
-    }
-    #endif
-
+final class ZipTests: XCTestCase {
     override func setUp() {
         super.setUp()
     }

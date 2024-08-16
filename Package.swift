@@ -1,5 +1,4 @@
-// swift-tools-version:5.1
-// The swift-tools-version declares the minimum version of Swift required to build this package.
+// swift-tools-version:5.8
 import PackageDescription
 
 let package = Package(
@@ -15,15 +14,19 @@ let package = Package(
             exclude: ["module"],
             linkerSettings: [
                 .linkedLibrary("z")
-            ]),
+            ]
+        ),
         .target(
             name: "Zip",
             dependencies: ["Minizip"],
             path: "Zip",
-            exclude: ["minizip", "zlib"]),
+            exclude: ["minizip", "zlib"]
+        ),
         .testTarget(
             name: "ZipTests",
-            dependencies: ["Zip"],
-            path: "ZipTests"),
+            dependencies: [
+                .target(name: "Zip"),
+            ]
+        ),
     ]
 )
