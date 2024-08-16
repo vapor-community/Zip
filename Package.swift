@@ -9,7 +9,6 @@ let package = Package(
     targets: [
         .target(
             name: "Minizip",
-            dependencies: [],
             path: "Zip/minizip",
             exclude: ["module"],
             linkerSettings: [
@@ -18,7 +17,9 @@ let package = Package(
         ),
         .target(
             name: "Zip",
-            dependencies: ["Minizip"],
+            dependencies: [
+                .target(name: "Minizip"),
+            ],
             path: "Zip",
             exclude: ["minizip", "zlib"]
         ),
@@ -26,6 +27,9 @@ let package = Package(
             name: "ZipTests",
             dependencies: [
                 .target(name: "Zip"),
+            ],
+            resources: [
+                .copy("Resources"),
             ]
         ),
     ]

@@ -17,22 +17,25 @@ public class Zip {
     internal static var customFileExtensions: Set<String> = []
 
     // MARK: Lifecycle
+
+    @available(*, deprecated, message: "Do not use this initializer. Zip is a utility class and should not be instantiated.")
     public init () {}
     
     // MARK: Unzip
     
     /**
-     Unzip file
+     Unzips a file.
      
-     - parameter zipFilePath: Local file path of zipped file. NSURL.
-     - parameter destination: Local file path to unzip to. NSURL.
-     - parameter overwrite:   Overwrite bool.
-     - parameter password:    Optional password if file is protected.
-     - parameter progress: A progress closure called after unzipping each file in the archive. Double value betweem 0 and 1.
+     - Parameters:
+       - zipFilePath: Local file path of zipped file. NSURL.
+       - destination: Local file path to unzip to. NSURL.
+       - overwrite:   Overwrite bool.
+       - password:    Optional password if file is protected.
+       - progress:    A progress closure called after unzipping each file in the archive. Double value betweem 0 and 1.
+
+     - Throws: `ZipError.unzipFail` if unzipping fails or if fail is not found.
      
-     - throws: Error if unzipping fails or if fail is not found. Can be printed with a description variable.
-     
-     - notes: Supports implicit progress composition
+     > Note: Supports implicit progress composition
      */
     public class func unzipFile(_ zipFilePath: URL, destination: URL, overwrite: Bool, password: String?, progress: ((_ progress: Double) -> ())? = nil, fileOutputHandler: ((_ unzippedFile: URL) -> Void)? = nil) throws {
         // File manager
@@ -206,24 +209,23 @@ public class Zip {
         }
         
         progressTracker.completedUnitCount = Int64(totalSize)
-        
     }
     
     // MARK: Zip
     
-    
     /**
-     Zip files.
+     Zips a group of files.
      
-     - parameter paths:       Array of NSURL filepaths.
-     - parameter zipFilePath: Destination NSURL, should lead to a .zip filepath.
-     - parameter password:    Password string. Optional.
-     - parameter compression: Compression strategy
-     - parameter progress: A progress closure called after unzipping each file in the archive. Double value betweem 0 and 1.
+     - Parameters:
+       - paths:       Array of NSURL filepaths.
+       - zipFilePath: Destination NSURL, should lead to a .zip filepath.
+       - password:    Password string. Optional.
+       - compression: Compression strategy
+       - progress:    A progress closure called after unzipping each file in the archive. Double value betweem 0 and 1.
+
+     - Throws: `ZipError.zipFail` if zipping fails.
      
-     - throws: Error if zipping fails.
-     
-     - notes: Supports implicit progress composition
+     > Note: Supports implicit progress composition
      */
     public class func zipFiles(paths: [URL], zipFilePath: URL, password: String?, compression: ZipCompression = .DefaultCompression, progress: ((_ progress: Double) -> ())?) throws {
         // File manager
@@ -324,8 +326,6 @@ public class Zip {
         
         progressTracker.completedUnitCount = Int64(totalSize)
     }
-
-    
     
     /**
      Check if file extension is invalid.
@@ -340,29 +340,29 @@ public class Zip {
     }
     
     /**
-     Add a file extension to the set of custom file extensions
+     Adds a file extension to the set of custom file extensions.
      
-     - parameter fileExtension: A file extension.
+     - Parameter fileExtension: A file extension.
      */
     public class func addCustomFileExtension(_ fileExtension: String) {
         customFileExtensions.insert(fileExtension)
     }
     
     /**
-     Remove a file extension from the set of custom file extensions
+     Removes a file extension from the set of custom file extensions.
      
-     - parameter fileExtension: A file extension.
+     - Parameter fileExtension: A file extension.
      */
     public class func removeCustomFileExtension(_ fileExtension: String) {
         customFileExtensions.remove(fileExtension)
     }
     
     /**
-     Check if a specific file extension is valid
+     Checks if a specific file extension is valid.
      
-     - parameter fileExtension: A file extension.
+     - Parameter fileExtension: A file extension.
      
-     - returns: true if the extension valid, otherwise false.
+     - Returns: `true` if the extension valid, otherwise `false`.
      */
     public class func isValidFileExtension(_ fileExtension: String) -> Bool {
         let validFileExtensions: Set<String> = customFileExtensions.union(["zip", "cbz"])

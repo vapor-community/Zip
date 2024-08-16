@@ -7,16 +7,16 @@
 
 import Foundation
 
-/// Zip error type
+/// Errors that can be thrown by Zip.
 public enum ZipError: Error {
-    /// File not found
+    /// The file was not found
     case fileNotFound
-    /// Unzip fail
+    /// Unzip failure
     case unzipFail
-    /// Zip fail
+    /// Zip failure
     case zipFail
 
-    /// User readable description
+    /// A textual representation of this error.
     public var description: String {
         switch self {
         case .fileNotFound: return NSLocalizedString("File not found.", comment: "")

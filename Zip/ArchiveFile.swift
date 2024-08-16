@@ -20,6 +20,7 @@ public struct ArchiveFile {
         self.modifiedTime = modifiedTime
     }
 
+    @available(*, deprecated, message: "Use the initializer that takes Foundation's `Data` instead.")
     public init(filename: String, data: NSData, modifiedTime: Date? = nil) {
         self.filename = filename
         self.data = Data(referencing: data)
@@ -29,17 +30,18 @@ public struct ArchiveFile {
 
 extension Zip {
     /**
-     Zip data in memory.
+     Zips data in memory.
      
-     - parameter archiveFiles:Array of Archive Files.
-     - parameter zipFilePath: Destination NSURL, should lead to a .zip filepath.
-     - parameter password:    Password string. Optional.
-     - parameter compression: Compression strategy
-     - parameter progress: A progress closure called after unzipping each file in the archive. Double value betweem 0 and 1.
+     - Parameters:
+       - archiveFiles: Array of Archive Files.
+       - zipFilePath:  Destination NSURL, should lead to a .zip filepath.
+       - password:     Password string. Optional.
+       - compression:  Compression strategy
+       - progress:     A progress closure called after unzipping each file in the archive. Double value betweem 0 and 1.
      
-     - throws: Error if zipping fails.
+     - Throws: `ZipError.zipFail` if zipping fails.
      
-     - notes: Supports implicit progress composition
+     > Note: Supports implicit progress composition.
      */
     public class func zipData(archiveFiles: [ArchiveFile], zipFilePath: URL, password: String?, compression: ZipCompression = .DefaultCompression, progress: ((_ progress: Double) -> ())?) throws {
         let destinationPath = zipFilePath.path

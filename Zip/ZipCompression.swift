@@ -7,6 +7,7 @@
 
 @_implementationOnly import Minizip
 
+/// Zip compression strategies.
 public enum ZipCompression: Int {
     case NoCompression
     case BestSpeed
