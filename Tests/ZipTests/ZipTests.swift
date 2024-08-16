@@ -264,4 +264,19 @@ final class ZipTests: XCTestCase {
         XCTAssertTrue(Zip.isValidFileExtension("zip"))
         XCTAssertTrue(Zip.isValidFileExtension("cbz"))
     }
+
+    func testZipData() throws {
+        let archiveFile1 = ArchiveFile(filename: "file1.txt", data: "Hello, World!".data(using: .utf8)!)
+        let archiveFile2 = ArchiveFile(filename: "file2.txt", data: "Hi Mom!".data(using: .utf8)!)
+        let sandboxFolder = try autoRemovingSandbox()
+        let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
+        try Zip.zipData(archiveFiles: [archiveFile1, archiveFile2], zipFilePath: zipFilePath, password: nil, progress: nil)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: zipFilePath.path))
+    }
+
+    func testZipError() {
+        XCTAssertEqual(ZipError.fileNotFound.description, "ZipError(errorType: fileNotFound)")
+        XCTAssertEqual(ZipError.unzipFail.description, "ZipError(errorType: unzipFail)")
+        XCTAssertEqual(ZipError.zipFail.description, "ZipError(errorType: zipFail)")
+    }
 }
