@@ -10,18 +10,6 @@ import XCTest
 @testable import Zip
 
 final class ZipTests: XCTestCase {
-    override func setUp() {
-        super.setUp()
-    }
-    
-    override func tearDown() {
-        super.tearDown()
-        #if os(Linux)
-        var blocks = tearDownBlocksQueue.sync { tearDownBlocks }
-        while let next = blocks.popLast() { next() }
-        #endif
-    }
-
     private func url(forResource resource: String, withExtension ext: String? = nil) -> URL? {
         #if Xcode
         return Bundle(for: ZipTests.self).url(forResource: resource, withExtension: ext)
