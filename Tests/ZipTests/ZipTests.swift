@@ -275,8 +275,8 @@ final class ZipTests: XCTestCase {
     }
 
     func testZipError() {
-        XCTAssertEqual(ZipError.fileNotFound.description, "ZipError(errorType: fileNotFound)")
-        XCTAssertEqual(ZipError.unzipFail.description, "ZipError(errorType: unzipFail)")
-        XCTAssertEqual(ZipError.zipFail.description, "ZipError(errorType: zipFail)")
+        XCTAssertEqual(ZipError.fileNotFound.description, "File not found.")
+        XCTAssertEqual(ZipError.unzipFail.description, "Failed to unzip file.")
+        XCTAssertEqual(ZipError.zipFail.description, "Failed to zip file.")
     }
 }

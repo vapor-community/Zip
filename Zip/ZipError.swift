@@ -5,64 +5,23 @@
 //  Created by Francesco Paolo Severino on 16/08/2024.
 //
 
-/// Errors that can be thrown by Zip.
-public struct ZipError: Error, Sendable {
-    /// The type of the errors that can be thrown by Zip.
-    public struct ErrorType: Sendable, Hashable, CustomStringConvertible {
-        enum Base: String, Sendable {
-            case fileNotFound
-            case unzipFail
-            case zipFail
-        }
+import Foundation
 
-        let base: Base
-        
-        private init(_ base: Base) {
-            self.base = base
-        }
-
-        /// File not found
-        public static let fileNotFound = Self(.fileNotFound)
-        /// Unzip fail
-        public static let unzipFail = Self(.unzipFail)
-        /// Zip fail
-        public static let zipFail = Self(.zipFail)
-
-        /// A textual representation of this error.
-        public var description: String {
-            base.rawValue
-        }
-    }
-
-    private struct Backing: Sendable {
-        fileprivate let errorType: ErrorType
-        
-        init(errorType: ErrorType) {
-            self.errorType = errorType
-        }
-    }
-    
-    private var backing: Backing
-
-    /// The type of this error.
-    public var errorType: ErrorType { backing.errorType }
-
-    private init(errorType: ErrorType) {
-        self.backing = .init(errorType: errorType)
-    }
-
+/// Zip error type
+public enum ZipError: Error {
     /// File not found
-    public static let fileNotFound = Self(errorType: .fileNotFound)
-
+    case fileNotFound
     /// Unzip fail
-    public static let unzipFail = Self(errorType: .unzipFail)
-
+    case unzipFail
     /// Zip fail
-    public static let zipFail = Self(errorType: .zipFail)
-}
+    case zipFail
 
-extension ZipError: CustomStringConvertible {
+    /// User readable description
     public var description: String {
-        "ZipError(errorType: \(self.errorType))"
+        switch self {
+        case .fileNotFound: return NSLocalizedString("File not found.", comment: "")
+        case .unzipFail: return NSLocalizedString("Failed to unzip file.", comment: "")
+        case .zipFail: return NSLocalizedString("Failed to zip file.", comment: "")
+        }
     }
 }
