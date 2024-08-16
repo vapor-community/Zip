@@ -38,3 +38,4 @@ Carthage/Build
 .build/
 .swiftpm/
 Packages/
+Package.resolved

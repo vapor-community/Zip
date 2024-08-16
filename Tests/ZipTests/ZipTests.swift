@@ -173,8 +173,11 @@ class ZipTests: XCTestCase {
         let expectedPermissions = 0o644
         #endif
         XCTAssertNotNil(foundPermissions)
-        XCTAssertEqual(foundPermissions, expectedPermissions,
-                       "\(foundPermissions.map { String($0, radix: 8) } ?? "nil") is not equal to \(String(expectedPermissions, radix: 8))")
+        XCTAssertEqual(
+            foundPermissions,
+            expectedPermissions,
+            "\(foundPermissions.map { String($0, radix: 8) } ?? "nil") is not equal to \(String(expectedPermissions, radix: 8))"
+        )
     }
 
     func testUnzipPermissions() throws {
@@ -204,8 +207,7 @@ class ZipTests: XCTestCase {
         do {
             try Zip.unzipFile(filePath, destination: destinationPath, overwrite: true, password: "password", progress: nil)
             XCTFail("ZipError.unzipFail expected.")
-        }
-        catch {}
+        } catch {}
         
         let fileManager = FileManager.default
         XCTAssertFalse(fileManager.fileExists(atPath: destinationPath.appendingPathComponent("../naughtyFile.txt").path))

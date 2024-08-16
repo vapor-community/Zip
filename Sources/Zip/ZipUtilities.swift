@@ -9,7 +9,6 @@
 import Foundation
 
 internal class ZipUtilities {
-    
     /*
      Include root directory.
      Default is true.
@@ -64,15 +63,13 @@ internal class ZipUtilities {
             if !isDirectory.boolValue {
                 let processedPath = ProcessedFilePath(filePathURL: path, fileName: path.lastPathComponent)
                 processedFilePaths.append(processedPath)
-            }
-            else {
+            } else {
                 let directoryContents = expandDirectoryFilePath(path)
                 processedFilePaths.append(contentsOf: directoryContents)
             }
         }
         return processedFilePaths
     }
-    
     
     /**
      Expand directory contents and parse them into ProcessedFilePath structs.
@@ -104,5 +101,4 @@ internal class ZipUtilities {
         }
         return processedFilePaths
     }
-
 }

@@ -13,21 +13,12 @@ let package = Package(
         .library(name: "Zip", targets: ["Zip"]),
     ],
     targets: [
-        .target(
-            name: "Minizip",
-            path: "Zip/minizip",
-            exclude: ["module"],
-            linkerSettings: [
-                .linkedLibrary("z")
-            ]
-        ),
+        .target(name: "Minizip"),
         .target(
             name: "Zip",
             dependencies: [
                 .target(name: "Minizip"),
-            ],
-            path: "Zip",
-            exclude: ["minizip", "zlib"]
+            ]
         ),
         .testTarget(
             name: "ZipTests",

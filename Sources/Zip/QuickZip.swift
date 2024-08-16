@@ -9,7 +9,6 @@
 import Foundation
 
 extension Zip {
-    
     /**
      Get search path directory. For tvOS Documents directory doesn't exist.
      
@@ -71,8 +70,8 @@ extension Zip {
             let destinationUrl = documentsUrl.appendingPathComponent(directoryName, isDirectory: true)
             try self.unzipFile(path, destination: destinationUrl, overwrite: true, password: nil, progress: progress)
             return destinationUrl
-        }catch{
-            throw(ZipError.unzipFail)
+        } catch {
+            throw ZipError.unzipFail
         }
     }
     
@@ -120,6 +119,4 @@ extension Zip {
         try self.zipFiles(paths: paths, zipFilePath: destinationUrl, password: nil, progress: progress)
         return destinationUrl
     }
-    
-    
 }
