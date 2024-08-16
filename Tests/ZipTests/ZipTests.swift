@@ -167,14 +167,13 @@ final class ZipTests: XCTestCase {
         let unzipDestination = try Zip.quickUnzipFile(permissionsURL)
         let permission644 = unzipDestination.appendingPathComponent("unsupported_permission").appendingPathExtension("txt")
         let foundPermissions = try FileManager.default.attributesOfItem(atPath: permission644.path)[.posixPermissions] as? Int
-        #if os(Linux)
-        let expectedPermissions = 0o664
-        #else
         let expectedPermissions = 0o644
-        #endif
         XCTAssertNotNil(foundPermissions)
-        XCTAssertEqual(foundPermissions, expectedPermissions,
-                       "\(foundPermissions.map { String($0, radix: 8) } ?? "nil") is not equal to \(String(expectedPermissions, radix: 8))")
+        XCTAssertEqual(
+            foundPermissions,
+            expectedPermissions,
+            "\(foundPermissions.map { String($0, radix: 8) } ?? "nil") is not equal to \(String(expectedPermissions, radix: 8))"
+        )
     }
 
     func testUnzipPermissions() throws {
