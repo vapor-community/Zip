@@ -9,28 +9,7 @@
 import XCTest
 @testable import Zip
 
-class ZipTests: XCTestCase {
-
-    #if os(Linux)
-    private let tearDownBlocksQueue = DispatchQueue(label: "XCTest.XCTestCase.tearDownBlocks.lock")
-    private var tearDownBlocks: [() -> Void] = []
-    func addTeardownBlock(_ block: @escaping () -> Void) {
-        tearDownBlocksQueue.sync { tearDownBlocks.append(block) }
-    }
-    #endif
-
-    override func setUp() {
-        super.setUp()
-    }
-    
-    override func tearDown() {
-        super.tearDown()
-        #if os(Linux)
-        var blocks = tearDownBlocksQueue.sync { tearDownBlocks }
-        while let next = blocks.popLast() { next() }
-        #endif
-    }
-
+final class ZipTests: XCTestCase {
     private func url(forResource resource: String, withExtension ext: String? = nil) -> URL? {
         #if Xcode
         return Bundle(for: ZipTests.self).url(forResource: resource, withExtension: ext)
@@ -102,7 +81,7 @@ class ZipTests: XCTestCase {
         let filePath = url(forResource: "bb8", withExtension: "zip")!
         let destinationPath = try autoRemovingSandbox()
 
-        try Zip.unzipFile(filePath, destination: destinationPath, overwrite: true, password: "password", progress: nil)
+        XCTAssertNoThrow(try Zip.unzipFile(filePath, destination: destinationPath, overwrite: true, password: "password", progress: nil))
 
         XCTAssertTrue(FileManager.default.fileExists(atPath: destinationPath.path))
     }
@@ -144,6 +123,18 @@ class ZipTests: XCTestCase {
             try? FileManager.default.removeItem(at: destinationURL)
         }
     }
+
+    func testQuickZipProgress() throws {
+        let imageURL1 = url(forResource: "3crBXeO", withExtension: "gif")!
+        let imageURL2 = url(forResource: "kYkLkPf", withExtension: "gif")!
+        let destinationURL = try Zip.quickZipFiles([imageURL1, imageURL2], fileName: "archive", progress: { progress in
+            XCTAssertFalse(progress.isNaN)
+        })
+        XCTAssertTrue(FileManager.default.fileExists(atPath:destinationURL.path))
+        addTeardownBlock {
+            try? FileManager.default.removeItem(at: destinationURL)
+        }
+    }
     
     func testQuickZipFolder() throws {
         let fileManager = FileManager.default
@@ -166,7 +157,7 @@ class ZipTests: XCTestCase {
         let imageURL2 = url(forResource: "kYkLkPf", withExtension: "gif")!
         let sandboxFolder = try autoRemovingSandbox()
         let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
-        try Zip.zipFiles(paths: [imageURL1, imageURL2], zipFilePath: zipFilePath, password: nil, progress: nil)
+        XCTAssertNoThrow(try Zip.zipFiles(paths: [imageURL1, imageURL2], zipFilePath: zipFilePath, password: nil, progress: nil))
         XCTAssertTrue(FileManager.default.fileExists(atPath: zipFilePath.path))
     }
     
@@ -188,14 +179,13 @@ class ZipTests: XCTestCase {
         let unzipDestination = try Zip.quickUnzipFile(permissionsURL)
         let permission644 = unzipDestination.appendingPathComponent("unsupported_permission").appendingPathExtension("txt")
         let foundPermissions = try FileManager.default.attributesOfItem(atPath: permission644.path)[.posixPermissions] as? Int
-        #if os(Linux)
-        let expectedPermissions = 0o664
-        #else
         let expectedPermissions = 0o644
-        #endif
         XCTAssertNotNil(foundPermissions)
-        XCTAssertEqual(foundPermissions, expectedPermissions,
-                       "\(foundPermissions.map { String($0, radix: 8) } ?? "nil") is not equal to \(String(expectedPermissions, radix: 8))")
+        XCTAssertEqual(
+            foundPermissions,
+            expectedPermissions,
+            "\(foundPermissions.map { String($0, radix: 8) } ?? "nil") is not equal to \(String(expectedPermissions, radix: 8))"
+        )
     }
 
     func testUnzipPermissions() throws {
@@ -285,5 +275,48 @@ class ZipTests: XCTestCase {
         Zip.removeCustomFileExtension("cbz")
         XCTAssertTrue(Zip.isValidFileExtension("zip"))
         XCTAssertTrue(Zip.isValidFileExtension("cbz"))
+    }
+
+    func testZipData() throws {
+        let archiveFile1 = ArchiveFile(filename: "file1.txt", data: "Hello, World!".data(using: .utf8)!)
+        let archiveFile2 = ArchiveFile(
+            filename: "file2.txt",
+            data: NSData(data: "Hi Mom!".data(using: .utf8)!),
+            modifiedTime: Date()
+        )
+        let emptyArchiveFile = ArchiveFile(filename: "empty.txt", data: Data())
+        let sandboxFolder = try autoRemovingSandbox()
+        let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
+        try Zip.zipData(archiveFiles: [archiveFile1, archiveFile2, emptyArchiveFile], zipFilePath: zipFilePath, password: nil, progress: nil)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: zipFilePath.path))
+    }
+
+    func testZipDataProgress() throws {
+        let archiveFile1 = ArchiveFile(filename: "file1.txt", data: "Hello, World!".data(using: .utf8)!)
+        let archiveFile2 = ArchiveFile(
+            filename: "file2.txt",
+            data: NSData(data: "Hi Mom!".data(using: .utf8)!),
+            modifiedTime: Date()
+        )
+        let emptyArchiveFile = ArchiveFile(filename: "empty.txt", data: Data())
+        let sandboxFolder = try autoRemovingSandbox()
+        let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
+        try Zip.zipData(archiveFiles: [archiveFile1, archiveFile2, emptyArchiveFile], zipFilePath: zipFilePath, password: nil, progress: { progress in
+            XCTAssertFalse(progress.isNaN)
+        })
+        XCTAssertTrue(FileManager.default.fileExists(atPath: zipFilePath.path))
+    }
+
+    func testZipError() {
+        XCTAssertEqual(ZipError.fileNotFound.description, "File not found.")
+        XCTAssertEqual(ZipError.unzipFail.description, "Failed to unzip file.")
+        XCTAssertEqual(ZipError.zipFail.description, "Failed to zip file.")
+    }
+
+    func testZipCompression() {
+        XCTAssertEqual(ZipCompression.NoCompression.minizipCompression, 0)
+        XCTAssertEqual(ZipCompression.BestSpeed.minizipCompression, 1)
+        XCTAssertEqual(ZipCompression.DefaultCompression.minizipCompression, -1)
+        XCTAssertEqual(ZipCompression.BestCompression.minizipCompression, 9)
     }
 }

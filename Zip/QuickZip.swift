@@ -28,29 +28,34 @@ extension Zip {
     //MARK: Quick Unzip
     
     /**
-     Quick unzip a file. Unzips to a new folder inside the app's documents folder with the zip file's name.
+     Quickly unzips a file.
      
-     - parameter path: Path of zipped file. NSURL.
+     Unzips to a new folder inside the app's documents folder with the zip file's name.
      
-     - throws: Error if unzipping fails or if file is not found. Can be printed with a description variable.
+     - Parameter path: Path of zipped file.
      
-     - returns: NSURL of the destination folder.
+     - Throws: `ZipError.unzipFail` if unzipping fails or `ZipError.fileNotFound` if file is not found.
+     
+     - Returns: `URL` of the destination folder.
      */
     public class func quickUnzipFile(_ path: URL) throws -> URL {
         return try quickUnzipFile(path, progress: nil)
     }
     
     /**
-     Quick unzip a file. Unzips to a new folder inside the app's documents folder with the zip file's name.
+     Quickly unzips a file.
      
-     - parameter path: Path of zipped file. NSURL.
-     - parameter progress: A progress closure called after unzipping each file in the archive. Double value betweem 0 and 1.
+     Unzips to a new folder inside the app's documents folder with the zip file's name.
      
-     - throws: Error if unzipping fails or if file is not found. Can be printed with a description variable.
+     - Parameters:
+       - path: Path of zipped file.
+       - progress: A progress closure called after unzipping each file in the archive. `Double` value between 0 and 1.
      
-     - notes: Supports implicit progress composition
+     - Throws: `ZipError.unzipFail` if unzipping fails or `ZipError.fileNotFound` if file is not found.
      
-     - returns: NSURL of the destination folder.
+     > Note: Supports implicit progress composition.
+     
+     - Returns: `URL` of the destination folder.
      */
     public class func quickUnzipFile(_ path: URL, progress: ((_ progress: Double) -> ())?) throws -> URL {
         let fileManager = FileManager.default
@@ -79,33 +84,35 @@ extension Zip {
     //MARK: Quick Zip
     
     /**
-     Quick zip files.
+     Quickly zips files.
      
-     - parameter paths: Array of NSURL filepaths.
-     - parameter fileName: File name for the resulting zip file.
+     - Parameters:
+       - paths: Array of `URL` filepaths.
+       - fileName: File name for the resulting zip file.
      
-     - throws: Error if zipping fails.
+     - Throws: `ZipError.zipFail` if zipping fails.
      
-     - notes: Supports implicit progress composition
+     > Note: Supports implicit progress composition.
      
-     - returns: NSURL of the destination folder.
+     - Returns: `URL` of the destination folder.
      */
     public class func quickZipFiles(_ paths: [URL], fileName: String) throws -> URL {
         return try quickZipFiles(paths, fileName: fileName, progress: nil)
     }
     
     /**
-     Quick zip files.
+     Quickly zips files.
      
-     - parameter paths: Array of NSURL filepaths.
-     - parameter fileName: File name for the resulting zip file.
-     - parameter progress: A progress closure called after unzipping each file in the archive. Double value betweem 0 and 1.
+     - Parameters:
+       - paths: Array of `URL` filepaths.
+       - fileName: File name for the resulting zip file.
+       - progress: A progress closure called after unzipping each file in the archive. `Double` value between 0 and 1.
      
-     - throws: Error if zipping fails.
+     - Throws: `ZipError.zipFail` if zipping fails.
      
-     - notes: Supports implicit progress composition
+     > Note: Supports implicit progress composition.
      
-     - returns: NSURL of the destination folder.
+     - Returns: `URL` of the destination folder.
      */
     public class func quickZipFiles(_ paths: [URL], fileName: String, progress: ((_ progress: Double) -> ())?) throws -> URL {
         let fileManager = FileManager.default
@@ -120,6 +127,4 @@ extension Zip {
         try self.zipFiles(paths: paths, zipFilePath: destinationUrl, password: nil, progress: progress)
         return destinationUrl
     }
-    
-    
 }
