@@ -81,7 +81,7 @@ final class ZipTests: XCTestCase {
         let filePath = url(forResource: "bb8", withExtension: "zip")!
         let destinationPath = try autoRemovingSandbox()
 
-        try Zip.unzipFile(filePath, destination: destinationPath, overwrite: true, password: "password", progress: nil)
+        XCTAssertNoThrow(try Zip.unzipFile(filePath, destination: destinationPath, overwrite: true, password: "password", progress: nil))
 
         XCTAssertTrue(FileManager.default.fileExists(atPath: destinationPath.path))
     }
@@ -123,6 +123,18 @@ final class ZipTests: XCTestCase {
             try? FileManager.default.removeItem(at: destinationURL)
         }
     }
+
+    func testQuickZipProgress() throws {
+        let imageURL1 = url(forResource: "3crBXeO", withExtension: "gif")!
+        let imageURL2 = url(forResource: "kYkLkPf", withExtension: "gif")!
+        let destinationURL = try Zip.quickZipFiles([imageURL1, imageURL2], fileName: "archive", progress: { progress in
+            XCTAssertFalse(progress.isNaN)
+        })
+        XCTAssertTrue(FileManager.default.fileExists(atPath:destinationURL.path))
+        addTeardownBlock {
+            try? FileManager.default.removeItem(at: destinationURL)
+        }
+    }
     
     func testQuickZipFolder() throws {
         let fileManager = FileManager.default
@@ -145,7 +157,7 @@ final class ZipTests: XCTestCase {
         let imageURL2 = url(forResource: "kYkLkPf", withExtension: "gif")!
         let sandboxFolder = try autoRemovingSandbox()
         let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
-        try Zip.zipFiles(paths: [imageURL1, imageURL2], zipFilePath: zipFilePath, password: nil, progress: nil)
+        XCTAssertNoThrow(try Zip.zipFiles(paths: [imageURL1, imageURL2], zipFilePath: zipFilePath, password: nil, progress: nil))
         XCTAssertTrue(FileManager.default.fileExists(atPath: zipFilePath.path))
     }
     
@@ -267,10 +279,31 @@ final class ZipTests: XCTestCase {
 
     func testZipData() throws {
         let archiveFile1 = ArchiveFile(filename: "file1.txt", data: "Hello, World!".data(using: .utf8)!)
-        let archiveFile2 = ArchiveFile(filename: "file2.txt", data: NSData(data: "Hi Mom!".data(using: .utf8)!))
+        let archiveFile2 = ArchiveFile(
+            filename: "file2.txt",
+            data: NSData(data: "Hi Mom!".data(using: .utf8)!),
+            modifiedTime: Date()
+        )
+        let emptyArchiveFile = ArchiveFile(filename: "empty.txt", data: Data())
         let sandboxFolder = try autoRemovingSandbox()
         let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
-        try Zip.zipData(archiveFiles: [archiveFile1, archiveFile2], zipFilePath: zipFilePath, password: nil, progress: nil)
+        try Zip.zipData(archiveFiles: [archiveFile1, archiveFile2, emptyArchiveFile], zipFilePath: zipFilePath, password: nil, progress: nil)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: zipFilePath.path))
+    }
+
+    func testZipDataProgress() throws {
+        let archiveFile1 = ArchiveFile(filename: "file1.txt", data: "Hello, World!".data(using: .utf8)!)
+        let archiveFile2 = ArchiveFile(
+            filename: "file2.txt",
+            data: NSData(data: "Hi Mom!".data(using: .utf8)!),
+            modifiedTime: Date()
+        )
+        let emptyArchiveFile = ArchiveFile(filename: "empty.txt", data: Data())
+        let sandboxFolder = try autoRemovingSandbox()
+        let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
+        try Zip.zipData(archiveFiles: [archiveFile1, archiveFile2, emptyArchiveFile], zipFilePath: zipFilePath, password: nil, progress: { progress in
+            XCTAssertFalse(progress.isNaN)
+        })
         XCTAssertTrue(FileManager.default.fileExists(atPath: zipFilePath.path))
     }
 
@@ -278,5 +311,12 @@ final class ZipTests: XCTestCase {
         XCTAssertEqual(ZipError.fileNotFound.description, "File not found.")
         XCTAssertEqual(ZipError.unzipFail.description, "Failed to unzip file.")
         XCTAssertEqual(ZipError.zipFail.description, "Failed to zip file.")
+    }
+
+    func testZipCompression() {
+        XCTAssertEqual(ZipCompression.NoCompression.minizipCompression, 0)
+        XCTAssertEqual(ZipCompression.BestSpeed.minizipCompression, 1)
+        XCTAssertEqual(ZipCompression.DefaultCompression.minizipCompression, -1)
+        XCTAssertEqual(ZipCompression.BestCompression.minizipCompression, 9)
     }
 }

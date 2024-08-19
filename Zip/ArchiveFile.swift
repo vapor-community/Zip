@@ -108,7 +108,7 @@ extension Zip {
             // Update progress handler
             currentPosition += archiveFile.data.count
 
-            if let progressHandler = progress{
+            if let progressHandler = progress {
                 progressHandler((Double(currentPosition/totalSize)))
             }
 
@@ -118,7 +118,7 @@ extension Zip {
         zipClose(zip, nil)
 
         // Completed. Update progress handler.
-        if let progressHandler = progress{
+        if let progressHandler = progress {
             progressHandler(1.0)
         }
 
