@@ -8,18 +8,30 @@
 import Foundation
 @_implementationOnly import Minizip
 
-/// Data in memory that will be archived as a file.
+/// Defines data saved in memory that will be archived as a file.
 public struct ArchiveFile {
     var filename: String
     var data: Data
     var modifiedTime: Date?
 
+    /// Creates an ``ArchiveFile`` instance.
+    ///
+    /// - Parameters:
+    ///   - filename: The name of the file represented by the data.
+    ///   - data: The `Data` to be archived.
+    ///   - modifiedTime: The last modification date of the file. Optional.
     public init(filename: String, data: Data, modifiedTime: Date? = nil) {
         self.filename = filename
         self.data = data
         self.modifiedTime = modifiedTime
     }
 
+    /// Creates an ``ArchiveFile`` instance.
+    ///
+    /// - Parameters:
+    ///   - filename: The name of the file represented by the data.
+    ///   - data: The `NSData` to be archived.
+    ///   - modifiedTime: The last modification date of the file. Optional.
     @available(*, deprecated, message: "Use the initializer that takes Foundation's `Data` instead.")
     public init(filename: String, data: NSData, modifiedTime: Date? = nil) {
         self.filename = filename
@@ -30,11 +42,11 @@ public struct ArchiveFile {
 
 extension Zip {
     /**
-     Zips data in memory.
+     Creates a zip file from an array of ``ArchiveFile``s
      
      - Parameters:
-       - archiveFiles: Array of Archive Files.
-       - zipFilePath:  Destination NSURL, should lead to a .zip filepath.
+       - archiveFiles: Array of ``ArchiveFile``.
+       - zipFilePath:  Destination `URL`, should lead to a `.zip` filepath.
        - password:     Password string. Optional.
        - compression:  Compression strategy
        - progress:     A progress closure called after unzipping each file in the archive. Double value betweem 0 and 1.

@@ -32,7 +32,7 @@ Use the SPM string to easily include the dependendency in your `Package.swift` f
 
 ### Quick functions
 
-The easiest way to use Zip is through quick functions. Both take local file paths as NSURLs, throw if an error is encountered and return an NSURL to the destination if successful.
+The easiest way to use Zip is through quick functions. Both take local file paths as `URL`s, throw if an error is encountered and return an `URL` to the destination if successful.
 
 ```swift
 import Zip
@@ -48,7 +48,7 @@ do {
 
 ### Advanced Zip
 
-For more advanced usage, Zip has functions that let you set custom  destination paths, work with password protected zips and use a progress handling closure. These functions throw if there is an error but don't return.
+For more advanced usage, Zip has functions that let you set custom destination paths, work with password protected zips and use a progress handling closure. These functions throw if there is an error but don't return.
 
 ```swift
 import Zip
@@ -71,7 +71,7 @@ do {
 
 ### Custom File Extensions
 
-Zip supports '.zip' and '.cbz' files out of the box. To support additional zip-derivative file extensions:
+Zip supports `.zip` and `.cbz` files out of the box. To support additional zip-derivative file extensions:
 
 ```swift
 Zip.addCustomFileExtension("file-extension-here")

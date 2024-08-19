@@ -9,7 +9,7 @@
 import Foundation
 @_implementationOnly import Minizip
 
-/// Zip class
+/// Main class that handles zipping and unzipping of files.
 public class Zip {
     /**
      Set of vaild file extensions
@@ -27,11 +27,11 @@ public class Zip {
      Unzips a file.
      
      - Parameters:
-       - zipFilePath: Local file path of zipped file. NSURL.
-       - destination: Local file path to unzip to. NSURL.
-       - overwrite:   Overwrite bool.
+       - zipFilePath: Local file path of zipped file.
+       - destination: Local file path to unzip to.
+       - overwrite:   Overwrite `bool`.
        - password:    Optional password if file is protected.
-       - progress:    A progress closure called after unzipping each file in the archive. Double value betweem 0 and 1.
+       - progress:    A progress closure called after unzipping each file in the archive. `Double` value between 0 and 1.
 
      - Throws: `ZipError.unzipFail` if unzipping fails or if fail is not found.
      
@@ -217,11 +217,11 @@ public class Zip {
      Zips a group of files.
      
      - Parameters:
-       - paths:       Array of NSURL filepaths.
-       - zipFilePath: Destination NSURL, should lead to a .zip filepath.
+       - paths:       Array of `URL` filepaths.
+       - zipFilePath: Destination `URL`, should lead to a `.zip` filepath.
        - password:    Password string. Optional.
        - compression: Compression strategy
-       - progress:    A progress closure called after unzipping each file in the archive. Double value betweem 0 and 1.
+       - progress:    A progress closure called after unzipping each file in the archive. `Double` value between 0 and 1.
 
      - Throws: `ZipError.zipFail` if zipping fails.
      
@@ -332,7 +332,7 @@ public class Zip {
      
      - parameter fileExtension: A file extension.
      
-     - returns: false if the extension is a valid file extension, otherwise true.
+     - returns: `false` if the extension is a valid file extension, otherwise `true`.
      */
     internal class func fileExtensionIsInvalid(_ fileExtension: String?) -> Bool {
         guard let fileExtension = fileExtension else { return true }
@@ -360,7 +360,7 @@ public class Zip {
     /**
      Checks if a specific file extension is valid.
      
-     - Parameter fileExtension: A file extension.
+     - Parameter fileExtension: A file extension to check.
      
      - Returns: `true` if the extension valid, otherwise `false`.
      */
