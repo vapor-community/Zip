@@ -37,14 +37,14 @@ public class Zip {
      
      > Note: Supports implicit progress composition
      */
-    public class func unzipFile(_ zipFilePath: URL, destination: URL, overwrite: Bool, password: String?, progress: ((_ progress: Double) -> ())? = nil, fileOutputHandler: ((_ unzippedFile: URL) -> Void)? = nil) throws {
+    public class func unzipFile(_ zipFilePath: URL, destination: URL, overwrite: Bool, password: String? = nil, progress: ((_ progress: Double) -> ())? = nil, fileOutputHandler: ((_ unzippedFile: URL) -> Void)? = nil) throws {
         // File manager
         let fileManager = FileManager.default
         
         // Check whether a zip file exists at path.
         let path = zipFilePath.path
         
-        if fileManager.fileExists(atPath: path) == false || fileExtensionIsInvalid(zipFilePath.pathExtension) {
+        if fileManager.fileExists(atPath: path) == false || !isValidFileExtension(zipFilePath.pathExtension) {
             throw ZipError.fileNotFound
         }
         
@@ -151,9 +151,8 @@ public class Zip {
             }
 
             var writeBytes: UInt64 = 0
-            var filePointer: UnsafeMutablePointer<FILE>?
-            filePointer = fopen(fullPath, "wb")
-            while let filePointer = filePointer {
+            while let filePointer = fopen(fullPath, "wb") {
+                defer { fclose(filePointer) }
                 let readBytes = unzReadCurrentFile(zip, &buffer, bufferSize)
                 if readBytes > 0 {
                     guard fwrite(buffer, Int(readBytes), 1, filePointer) == 1 else {
@@ -162,8 +161,6 @@ public class Zip {
                     writeBytes += UInt64(readBytes)
                 } else { break }
             }
-
-            if let fp = filePointer { fclose(fp) }
 
             crc_ret = unzCloseCurrentFile(zip)
             if crc_ret == UNZ_CRCERROR {
@@ -189,7 +186,7 @@ public class Zip {
             ret = unzGoToNextFile(zip)
             
             // Update progress handler
-            if let progressHandler = progress{
+            if let progressHandler = progress {
                 progressHandler((currentPosition/totalSize))
             }
             
@@ -204,7 +201,7 @@ public class Zip {
         } while (ret == UNZ_OK && ret != UNZ_END_OF_LIST_OF_FILE)
         
         // Completed. Update progress handler.
-        if let progressHandler = progress{
+        if let progressHandler = progress {
             progressHandler(1.0)
         }
         
@@ -227,7 +224,7 @@ public class Zip {
      
      > Note: Supports implicit progress composition
      */
-    public class func zipFiles(paths: [URL], zipFilePath: URL, password: String?, compression: ZipCompression = .DefaultCompression, progress: ((_ progress: Double) -> ())?) throws {
+    public class func zipFiles(paths: [URL], zipFilePath: URL, password: String? = nil, compression: ZipCompression = .DefaultCompression, progress: ((_ progress: Double) -> ())? = nil) throws {
         // File manager
         let fileManager = FileManager.default
         
@@ -328,18 +325,6 @@ public class Zip {
     }
     
     /**
-     Check if file extension is invalid.
-     
-     - parameter fileExtension: A file extension.
-     
-     - returns: `false` if the extension is a valid file extension, otherwise `true`.
-     */
-    internal class func fileExtensionIsInvalid(_ fileExtension: String?) -> Bool {
-        guard let fileExtension = fileExtension else { return true }
-        return !isValidFileExtension(fileExtension)
-    }
-    
-    /**
      Adds a file extension to the set of custom file extensions.
      
      - Parameter fileExtension: A file extension.
@@ -362,7 +347,7 @@ public class Zip {
      
      - Parameter fileExtension: A file extension to check.
      
-     - Returns: `true` if the extension valid, otherwise `false`.
+     - Returns: `true` if the extension is valid, otherwise `false`.
      */
     public class func isValidFileExtension(_ fileExtension: String) -> Bool {
         let validFileExtensions: Set<String> = customFileExtensions.union(["zip", "cbz"])

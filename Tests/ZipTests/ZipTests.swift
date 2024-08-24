@@ -11,28 +11,18 @@ import XCTest
 
 final class ZipTests: XCTestCase {
     private func url(forResource resource: String, withExtension ext: String? = nil) -> URL? {
-        #if Xcode
-        return Bundle(for: ZipTests.self).url(forResource: resource, withExtension: ext)
-        #else
-        let testDirPath = URL(fileURLWithPath: String(#file)).deletingLastPathComponent()
-        let resourcePath = testDirPath.appendingPathComponent("Resources").appendingPathComponent(resource)
+        let resourcePath = URL(fileURLWithPath: String(#file))
+            .deletingLastPathComponent()
+            .appendingPathComponent("Resources")
+            .appendingPathComponent(resource)
         return ext.map { resourcePath.appendingPathExtension($0) } ?? resourcePath
-        #endif
-    }
-
-    private func temporaryDirectory() -> URL {
-        if #available(macOS 10.12, iOS 10.0, tvOS 10.0, watchOS 3.0, *) {
-            return FileManager.default.temporaryDirectory
-        } else {
-            return URL(fileURLWithPath: NSTemporaryDirectory())
-        }
     }
 
     private func autoRemovingSandbox() throws -> URL {
-        let sandbox = temporaryDirectory().appendingPathComponent("ZipTests_" + UUID().uuidString, isDirectory: true)
+        let sandbox = FileManager.default.temporaryDirectory.appendingPathComponent("ZipTests_" + UUID().uuidString, isDirectory: true)
         // We can always create it. UUID should be unique.
         try FileManager.default.createDirectory(at: sandbox, withIntermediateDirectories: true, attributes: nil)
-        // Schedule the teardown block _after_ creating the directory has been created (so that if it fails, no teardown block is registered).
+        // Schedule the teardown block _after_ the directory has been created (so that if it fails, no teardown block is registered).
         addTeardownBlock {
             do {
                 try FileManager.default.removeItem(at: sandbox)
@@ -127,9 +117,9 @@ final class ZipTests: XCTestCase {
     func testQuickZipProgress() throws {
         let imageURL1 = url(forResource: "3crBXeO", withExtension: "gif")!
         let imageURL2 = url(forResource: "kYkLkPf", withExtension: "gif")!
-        let destinationURL = try Zip.quickZipFiles([imageURL1, imageURL2], fileName: "archive", progress: { progress in
+        let destinationURL = try Zip.quickZipFiles([imageURL1, imageURL2], fileName: "archive") { progress in
             XCTAssertFalse(progress.isNaN)
-        })
+        }
         XCTAssertTrue(FileManager.default.fileExists(atPath:destinationURL.path))
         addTeardownBlock {
             try? FileManager.default.removeItem(at: destinationURL)
@@ -215,8 +205,7 @@ final class ZipTests: XCTestCase {
         do {
             try Zip.unzipFile(filePath, destination: destinationPath, overwrite: true, password: "password", progress: nil)
             XCTFail("ZipError.unzipFail expected.")
-        }
-        catch {}
+        } catch {}
         
         let fileManager = FileManager.default
         XCTAssertFalse(fileManager.fileExists(atPath: destinationPath.appendingPathComponent("../naughtyFile.txt").path))
@@ -235,18 +224,6 @@ final class ZipTests: XCTestCase {
         XCTAssertTrue(fileManager.fileExists(atPath: unzipDestination.path))
         XCTAssertTrue(fileManager.fileExists(atPath: subDir.path))
         XCTAssertTrue(fileManager.fileExists(atPath: imageURL.path))
-    }
-
-    func testFileExtensionIsNotInvalidForValidUrl() {
-        let fileUrl = URL(string: "file.cbz")
-        let result = Zip.fileExtensionIsInvalid(fileUrl?.pathExtension)
-        XCTAssertFalse(result)
-    }
-    
-    func testFileExtensionIsInvalidForInvalidUrl() {
-        let fileUrl = URL(string: "file.xyz")
-        let result = Zip.fileExtensionIsInvalid(fileUrl?.pathExtension)
-        XCTAssertTrue(result)
     }
     
     func testAddedCustomFileExtensionIsValid() {
@@ -287,7 +264,7 @@ final class ZipTests: XCTestCase {
         let emptyArchiveFile = ArchiveFile(filename: "empty.txt", data: Data())
         let sandboxFolder = try autoRemovingSandbox()
         let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
-        try Zip.zipData(archiveFiles: [archiveFile1, archiveFile2, emptyArchiveFile], zipFilePath: zipFilePath, password: nil, progress: nil)
+        try Zip.zipData(archiveFiles: [archiveFile1, archiveFile2, emptyArchiveFile], zipFilePath: zipFilePath)
         XCTAssertTrue(FileManager.default.fileExists(atPath: zipFilePath.path))
     }
 
@@ -301,9 +278,9 @@ final class ZipTests: XCTestCase {
         let emptyArchiveFile = ArchiveFile(filename: "empty.txt", data: Data())
         let sandboxFolder = try autoRemovingSandbox()
         let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
-        try Zip.zipData(archiveFiles: [archiveFile1, archiveFile2, emptyArchiveFile], zipFilePath: zipFilePath, password: nil, progress: { progress in
+        try Zip.zipData(archiveFiles: [archiveFile1, archiveFile2, emptyArchiveFile], zipFilePath: zipFilePath) { progress in
             XCTAssertFalse(progress.isNaN)
-        })
+        }
         XCTAssertTrue(FileManager.default.fileExists(atPath: zipFilePath.path))
     }
 
@@ -318,5 +295,67 @@ final class ZipTests: XCTestCase {
         XCTAssertEqual(ZipCompression.BestSpeed.minizipCompression, 1)
         XCTAssertEqual(ZipCompression.DefaultCompression.minizipCompression, -1)
         XCTAssertEqual(ZipCompression.BestCompression.minizipCompression, 9)
+    }
+
+    // Tests if https://github.com/vapor-community/Zip/issues/4 does not occur anymore.
+    func testRoundTripping() throws {
+        // "prod-apple-swift-metrics-main-e6a00d36.zip" is the zip file from the issue.
+
+        // "prod-apple-swift-metrics-main-e6a00d36-test.zip" is a zip file
+        // that was created by unzipping the original zip file from the issue
+        // and then zipping it again using vapor-community/Zip v2.2.0.
+
+        // "prod-apple-swift-metrics-main-e6a00d36-finder.zip" is a zip file
+        // that was created by unzipping the original zip file from the issue
+        // and then zipping it again using Finder on macOS 14.6.1.
+
+        let zipFilePath = url(forResource: "prod-apple-swift-metrics-main-e6a00d36", withExtension: "zip")!
+        let destinationPath = try autoRemovingSandbox()
+        XCTAssertNoThrow(try Zip.unzipFile(zipFilePath, destination: destinationPath, overwrite: true))
+
+        let destinationFolder = destinationPath.appendingPathComponent("prod-apple-swift-metrics-main-e6a00d36")
+        XCTAssertTrue(
+            FileManager.default.fileExists(
+                atPath: destinationFolder.appendingPathComponent("metadata.json").path
+            )
+        )
+        XCTAssertTrue(
+            FileManager.default.fileExists(
+                atPath: destinationFolder.appendingPathComponent("main/index.html").path
+            )
+        )
+        XCTAssertTrue(
+            FileManager.default.fileExists(
+                atPath: destinationFolder.appendingPathComponent("main/index/index.json").path
+            )
+        )
+
+        let unzippedFiles = try FileManager.default.contentsOfDirectory(atPath: destinationFolder.path)
+
+        let newZipFilePath = try autoRemovingSandbox().appendingPathComponent("new-archive.zip")
+        try Zip.zipFiles(paths: [destinationFolder], zipFilePath: newZipFilePath)
+
+        let newDestinationPath = try autoRemovingSandbox()
+        try Zip.unzipFile(newZipFilePath, destination: newDestinationPath, overwrite: true)
+
+        let newDestinationFolder = newDestinationPath.appendingPathComponent("prod-apple-swift-metrics-main-e6a00d36")
+        XCTAssertTrue(
+            FileManager.default.fileExists(
+                atPath: newDestinationFolder.appendingPathComponent("metadata.json").path
+            )
+        )
+        XCTAssertTrue(
+            FileManager.default.fileExists(
+                atPath: newDestinationFolder.appendingPathComponent("main/index.html").path
+            )
+        )
+        XCTAssertTrue(
+            FileManager.default.fileExists(
+                atPath: newDestinationFolder.appendingPathComponent("main/index/index.json").path
+            )
+        )
+
+        let newUnzippedFiles = try FileManager.default.contentsOfDirectory(atPath: newDestinationFolder.path)
+        XCTAssertEqual(unzippedFiles, newUnzippedFiles)
     }
 }

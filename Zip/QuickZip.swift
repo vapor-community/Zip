@@ -8,38 +8,14 @@
 
 import Foundation
 
-extension Zip {
-    
-    /**
-     Get search path directory. For tvOS Documents directory doesn't exist.
-     
-     - returns: Search path directory
-     */
+extension Zip { 
+    // Get search path directory. For tvOS Documents directory doesn't exist.
     fileprivate class func searchPathDirectory() -> FileManager.SearchPathDirectory {
         var searchPathDirectory: FileManager.SearchPathDirectory = .documentDirectory
-        
         #if os(tvOS)
             searchPathDirectory = .cachesDirectory
         #endif
-        
         return searchPathDirectory
-    }
-    
-    //MARK: Quick Unzip
-    
-    /**
-     Quickly unzips a file.
-     
-     Unzips to a new folder inside the app's documents folder with the zip file's name.
-     
-     - Parameter path: Path of zipped file.
-     
-     - Throws: `ZipError.unzipFail` if unzipping fails or `ZipError.fileNotFound` if file is not found.
-     
-     - Returns: `URL` of the destination folder.
-     */
-    public class func quickUnzipFile(_ path: URL) throws -> URL {
-        return try quickUnzipFile(path, progress: nil)
     }
     
     /**
@@ -49,7 +25,7 @@ extension Zip {
      
      - Parameters:
        - path: Path of zipped file.
-       - progress: A progress closure called after unzipping each file in the archive. `Double` value between 0 and 1.
+       - progress: An optional progress closure called after unzipping each file in the archive. `Double` value between 0 and 1.
      
      - Throws: `ZipError.unzipFail` if unzipping fails or `ZipError.fileNotFound` if file is not found.
      
@@ -57,7 +33,7 @@ extension Zip {
      
      - Returns: `URL` of the destination folder.
      */
-    public class func quickUnzipFile(_ path: URL, progress: ((_ progress: Double) -> ())?) throws -> URL {
+    public class func quickUnzipFile(_ path: URL, progress: ((_ progress: Double) -> ())? = nil) throws -> URL {
         let fileManager = FileManager.default
 
         let fileExtension = path.pathExtension
@@ -76,19 +52,18 @@ extension Zip {
             let destinationUrl = documentsUrl.appendingPathComponent(directoryName, isDirectory: true)
             try self.unzipFile(path, destination: destinationUrl, overwrite: true, password: nil, progress: progress)
             return destinationUrl
-        }catch{
-            throw(ZipError.unzipFail)
+        } catch {
+            throw ZipError.unzipFail
         }
     }
     
-    //MARK: Quick Zip
-    
     /**
      Quickly zips files.
      
      - Parameters:
        - paths: Array of `URL` filepaths.
        - fileName: File name for the resulting zip file.
+       - progress: An optional progress closure called after unzipping each file in the archive. `Double` value between 0 and 1.
      
      - Throws: `ZipError.zipFail` if zipping fails.
      
@@ -96,25 +71,7 @@ extension Zip {
      
      - Returns: `URL` of the destination folder.
      */
-    public class func quickZipFiles(_ paths: [URL], fileName: String) throws -> URL {
-        return try quickZipFiles(paths, fileName: fileName, progress: nil)
-    }
-    
-    /**
-     Quickly zips files.
-     
-     - Parameters:
-       - paths: Array of `URL` filepaths.
-       - fileName: File name for the resulting zip file.
-       - progress: A progress closure called after unzipping each file in the archive. `Double` value between 0 and 1.
-     
-     - Throws: `ZipError.zipFail` if zipping fails.
-     
-     > Note: Supports implicit progress composition.
-     
-     - Returns: `URL` of the destination folder.
-     */
-    public class func quickZipFiles(_ paths: [URL], fileName: String, progress: ((_ progress: Double) -> ())?) throws -> URL {
+    public class func quickZipFiles(_ paths: [URL], fileName: String, progress: ((_ progress: Double) -> ())? = nil) throws -> URL {
         let fileManager = FileManager.default
         #if os(Linux)
         // urls(for:in:) is not yet implemented on Linux

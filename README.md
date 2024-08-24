@@ -25,7 +25,7 @@ Built on top of [minizip](https://github.com/nmoinvaz/minizip).
 Use the SPM string to easily include the dependendency in your `Package.swift` file.
 
 ```swift
-.package(url: "https://github.com/vapor-community/Zip.git", from: "2.1.3")
+.package(url: "https://github.com/vapor-community/Zip.git", from: "2.2.0")
 ```
 
 ## Usage
@@ -56,14 +56,14 @@ import Zip
 do {
   let filePath = Bundle.main.url(forResource: "file", withExtension: "zip")!
   let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-  try Zip.unzipFile(filePath, destination: documentsDirectory, overwrite: true,password: "password", progress: { (progress) -> () in
+  try Zip.unzipFile(filePath, destination: documentsDirectory, overwrite: true,password: "password") { progress in
     print(progress)
-  })
+  }
 
   let zipFilePath = documentsFolder.appendingPathComponent("archive.zip")
-  try Zip.zipFiles([filePath], zipFilePath: zipFilePath, password: "password", progress: { (progress) -> () in
+  try Zip.zipFiles([filePath], zipFilePath: zipFilePath, password: "password") { progress in
     print(progress)
-  })
+  }
 } catch {
   print("Something went wrong")
 }

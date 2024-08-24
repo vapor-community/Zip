@@ -55,7 +55,7 @@ extension Zip {
      
      > Note: Supports implicit progress composition.
      */
-    public class func zipData(archiveFiles: [ArchiveFile], zipFilePath: URL, password: String?, compression: ZipCompression = .DefaultCompression, progress: ((_ progress: Double) -> ())?) throws {
+    public class func zipData(archiveFiles: [ArchiveFile], zipFilePath: URL, password: String? = nil, compression: ZipCompression = .DefaultCompression, progress: ((_ progress: Double) -> ())? = nil) throws {
         let destinationPath = zipFilePath.path
 
         // Progress handler set up
