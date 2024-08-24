@@ -9,7 +9,6 @@ let package = Package(
     targets: [
         .target(
             name: "Minizip",
-            path: "Zip/minizip",
             exclude: ["module"],
             linkerSettings: [
                 .linkedLibrary("z")
@@ -19,9 +18,7 @@ let package = Package(
             name: "Zip",
             dependencies: [
                 .target(name: "Minizip"),
-            ],
-            path: "Zip",
-            exclude: ["minizip", "zlib"]
+            ]
         ),
         .testTarget(
             name: "ZipTests",

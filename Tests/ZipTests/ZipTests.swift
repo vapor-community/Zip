@@ -309,7 +309,7 @@ final class ZipTests: XCTestCase {
         // that was created by unzipping the original zip file from the issue
         // and then zipping it again using Finder on macOS 14.6.1.
 
-        let zipFilePath = url(forResource: "prod-apple-swift-metrics-main-e6a00d36", withExtension: "zip")!
+        let zipFilePath = url(forResource: "prod-apple-swift-metrics-main-e6a00d36-test", withExtension: "zip")!
         let destinationPath = try autoRemovingSandbox()
         XCTAssertNoThrow(try Zip.unzipFile(zipFilePath, destination: destinationPath, overwrite: true))
 
