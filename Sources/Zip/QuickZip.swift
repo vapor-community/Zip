@@ -25,7 +25,7 @@ extension Zip {
      
      - Parameters:
        - path: Path of zipped file.
-       - progress: An optional progress closure called after unzipping each file in the archive. `Double` value between 0 and 1.
+       - progress: An optional progress closure called after unzipping each file in the archive. A `Double` value between 0 and 1.
      
      - Throws: `ZipError.unzipFail` if unzipping fails or `ZipError.fileNotFound` if file is not found.
      
@@ -63,7 +63,7 @@ extension Zip {
      - Parameters:
        - paths: Array of `URL` filepaths.
        - fileName: File name for the resulting zip file.
-       - progress: An optional progress closure called after unzipping each file in the archive. `Double` value between 0 and 1.
+       - progress: An optional progress closure called after unzipping each file in the archive. A `Double` value between 0 and 1.
      
      - Throws: `ZipError.zipFail` if zipping fails.
      

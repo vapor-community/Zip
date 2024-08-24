@@ -11,17 +11,11 @@ import Foundation
 
 /// Main class that handles zipping and unzipping of files.
 public class Zip {
-    /**
-     Set of vaild file extensions
-     */
+    // Set of vaild file extensions
     internal static var customFileExtensions: Set<String> = []
-
-    // MARK: Lifecycle
 
     @available(*, deprecated, message: "Do not use this initializer. Zip is a utility class and should not be instantiated.")
     public init () {}
-    
-    // MARK: Unzip
     
     /**
      Unzips a file.
@@ -29,21 +23,27 @@ public class Zip {
      - Parameters:
        - zipFilePath: Local file path of zipped file.
        - destination: Local file path to unzip to.
-       - overwrite:   Overwrite `bool`.
+       - overwrite:   Indicates whether or not to overwrite files at the destination path.
        - password:    Optional password if file is protected.
-       - progress:    A progress closure called after unzipping each file in the archive. `Double` value between 0 and 1.
+       - progress:    A progress closure called after unzipping each file in the archive. A `Double` value between 0 and 1.
+       - fileOutputHandler: A closure called after each file is unzipped. A `URL` value of the unzipped file.
 
      - Throws: `ZipError.unzipFail` if unzipping fails or if fail is not found.
      
      > Note: Supports implicit progress composition
      */
-    public class func unzipFile(_ zipFilePath: URL, destination: URL, overwrite: Bool, password: String? = nil, progress: ((_ progress: Double) -> ())? = nil, fileOutputHandler: ((_ unzippedFile: URL) -> Void)? = nil) throws {
-        // File manager
+    public class func unzipFile(
+        _ zipFilePath: URL,
+        destination: URL,
+        overwrite: Bool = true,
+        password: String? = nil,
+        progress: ((_ progress: Double) -> ())? = nil,
+        fileOutputHandler: ((_ unzippedFile: URL) -> Void)? = nil
+    ) throws {
         let fileManager = FileManager.default
         
         // Check whether a zip file exists at path.
         let path = zipFilePath.path
-        
         if fileManager.fileExists(atPath: path) == false || !isValidFileExtension(zipFilePath.pathExtension) {
             throw ZipError.fileNotFound
         }
@@ -93,7 +93,6 @@ public class Zip {
             }
             currentPosition += Double(fileInfo.compressed_size)
             let fileNameSize = Int(fileInfo.size_filename) + 1
-            //let fileName = UnsafeMutablePointer<CChar>(allocatingCapacity: fileNameSize)
             let fileName = UnsafeMutablePointer<CChar>.allocate(capacity: fileNameSize)
 
             unzGetCurrentFileInfo64(zip, &fileInfo, fileName, UInt16(fileNameSize), nil, 0, nil, 0)
@@ -116,8 +115,8 @@ public class Zip {
             }
 
             let fullPath = destination.appendingPathComponent(pathString).standardized.path
-            // .standardized removes any ".. to move a level up".
-            // If we then check that the fullPath starts with the destination directory we know we are not extracting "outside" te destination.
+            // `.standardized` removes any ".. to move a level up".
+            // If we then check that the `fullPath` starts with the destination directory we know we are not extracting "outside" te destination.
             guard fullPath.starts(with: destination.standardized.path) else {
                 throw ZipError.unzipFail
             }
@@ -170,10 +169,10 @@ public class Zip {
                 throw ZipError.unzipFail
             }
 
-            //Set file permissions from current fileInfo
+            // Set file permissions from current `fileInfo`
             if fileInfo.external_fa != 0 {
                 let permissions = (fileInfo.external_fa >> 16) & 0x1FF
-                //We will devifne a valid permission range between Owner read only to full access
+                // We will devifne a valid permission range between Owner read only to full access
                 if permissions >= 0o400 && permissions <= 0o777 {
                     do {
                         try fileManager.setAttributes([.posixPermissions : permissions], ofItemAtPath: fullPath)
@@ -208,30 +207,29 @@ public class Zip {
         progressTracker.completedUnitCount = Int64(totalSize)
     }
     
-    // MARK: Zip
-    
     /**
      Zips a group of files.
      
      - Parameters:
        - paths:       Array of `URL` filepaths.
        - zipFilePath: Destination `URL`, should lead to a `.zip` filepath.
-       - password:    Password string. Optional.
-       - compression: Compression strategy
-       - progress:    A progress closure called after unzipping each file in the archive. `Double` value between 0 and 1.
+       - password:    The optional password string.
+       - compression: The compression strategy to use.
+       - progress:    A progress closure called after unzipping each file in the archive. A `Double` value between 0 and 1.
 
      - Throws: `ZipError.zipFail` if zipping fails.
      
      > Note: Supports implicit progress composition
      */
-    public class func zipFiles(paths: [URL], zipFilePath: URL, password: String? = nil, compression: ZipCompression = .DefaultCompression, progress: ((_ progress: Double) -> ())? = nil) throws {
-        // File manager
+    public class func zipFiles(
+        paths: [URL],
+        zipFilePath: URL,
+        password: String? = nil,
+        compression: ZipCompression = .DefaultCompression,
+        progress: ((_ progress: Double) -> ())? = nil
+    ) throws {
         let fileManager = FileManager.default
         
-        // Check whether a zip file exists at path.
-        let destinationPath = zipFilePath.path
-        
-        // Process zip paths
         let processedPaths = ZipUtilities().processZipPaths(paths)
         
         // Zip set up
@@ -240,13 +238,13 @@ public class Zip {
         // Progress handler set up
         var currentPosition: Double = 0.0
         var totalSize: Double = 0.0
-        // Get totalSize for progress handler
+        // Get `totalSize` for progress handler
         for path in processedPaths {
             do {
                 let filePath = path.filePath()
                 let fileAttributes = try fileManager.attributesOfItem(atPath: filePath)
                 let fileSize = fileAttributes[FileAttributeKey.size] as? Double
-                if let fileSize = fileSize {
+                if let fileSize {
                     totalSize += fileSize
                 }
             } catch {}
@@ -258,7 +256,7 @@ public class Zip {
         progressTracker.kind = ProgressKind.file
         
         // Begin Zipping
-        let zip = zipOpen(destinationPath, APPEND_STATUS_CREATE)
+        let zip = zipOpen(zipFilePath.path, APPEND_STATUS_CREATE)
         for path in processedPaths {
             let filePath = path.filePath()
             var isDirectory: ObjCBool = false
@@ -282,7 +280,7 @@ public class Zip {
                 guard let buffer = malloc(chunkSize) else {
                     throw ZipError.zipFail
                 }
-                if let password = password, let fileName = fileName {
+                if let password, let fileName {
                     zipOpenNewFileInZip3(zip, fileName, &zipInfo, nil, 0, nil, 0, nil, UInt16(Z_DEFLATED), compression.minizipCompression, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, 0)
                 } else if let fileName = fileName {
                     zipOpenNewFileInZip3(zip, fileName, &zipInfo, nil, 0, nil, 0, nil, UInt16(Z_DEFLATED), compression.minizipCompression, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, nil, 0)
@@ -290,16 +288,16 @@ public class Zip {
                     throw ZipError.zipFail
                 }
                 var length: Int = 0
-                while (feof(input) == 0) {
+                while feof(input) == 0 {
                     length = fread(buffer, 1, chunkSize, input)
                     zipWriteInFileInZip(zip, buffer, UInt32(length))
                 }
                 
-                // Update progress handler, only if progress is not 1, because
-                // if we call it when progress == 1, the user will receive
-                // a progress handler call with value 1.0 twice.
+                // Update progress handler, only if progress is not 1,
+                // because if we call it when progress == 1,
+                // the user will receive a progress handler call with value 1.0 twice.
                 if let progressHandler = progress, currentPosition / totalSize != 1 {
-                    progressHandler(currentPosition/totalSize)
+                    progressHandler(currentPosition / totalSize)
                 }
                 
                 progressTracker.completedUnitCount = Int64(currentPosition)
