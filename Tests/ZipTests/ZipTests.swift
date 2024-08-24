@@ -299,14 +299,14 @@ final class ZipTests: XCTestCase {
 
     // Tests if https://github.com/vapor-community/Zip/issues/4 does not occur anymore.
     func testRoundTripping() throws {
-        // "prod-apple-swift-metrics-main-e6a00d36.zip" is the zip file from the issue.
+        // "prod-apple-swift-metrics-main-e6a00d36.zip" is the original zip file from the issue.
 
         // "prod-apple-swift-metrics-main-e6a00d36-test.zip" is a zip file
-        // that was created by unzipping the original zip file from the issue
+        // that was created by unzipping the original zip file with Finder on macOS 14.6.1
         // and then zipping it again using vapor-community/Zip v2.2.0.
 
         // "prod-apple-swift-metrics-main-e6a00d36-finder.zip" is a zip file
-        // that was created by unzipping the original zip file from the issue
+        // that was created by unzipping the original zip file with Finder on macOS 14.6.1
         // and then zipping it again using Finder on macOS 14.6.1.
 
         let zipFilePath = url(forResource: "prod-apple-swift-metrics-main-e6a00d36-test", withExtension: "zip")!
