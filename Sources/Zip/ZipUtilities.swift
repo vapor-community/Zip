@@ -71,7 +71,6 @@ internal class ZipUtilities {
         return processedFilePaths
     }
     
-    
     /**
      Expand directory contents and parse them into ProcessedFilePath structs.
      
@@ -102,5 +101,4 @@ internal class ZipUtilities {
         }
         return processedFilePaths
     }
-
 }

@@ -69,6 +69,23 @@ do {
 }
 ```
 
+# Archive Data saved in memory
+
+Zip provides a way to archive data saved in memory.
+This is useful when you want to create a zip archive without having the source files saved to disk.
+
+```swift
+import Zip
+
+do {
+  let archiveFile = ArchiveFile(filename: "file.txt", data: "Hello, World!".data(using: .utf8)!)
+  let zipFilePath = FileManager.default.temporaryDirectory.appendingPathComponent("archive.zip")
+  try Zip.zipData(archiveFiles: [archiveFile], zipFilePath: zipFilePath)
+} catch {
+  print("Something went wrong")
+}
+```
+
 ### Custom File Extensions
 
 Zip supports `.zip` and `.cbz` files out of the box. To support additional zip-derivative file extensions:

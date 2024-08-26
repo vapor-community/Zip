@@ -69,9 +69,7 @@ public class Zip {
         
         // Begin unzipping
         let zip = unzOpen64(path)
-        defer {
-            unzClose(zip)
-        }
+        defer { unzClose(zip) }
         if unzGoToFirstFile(zip) != UNZ_OK {
             throw ZipError.unzipFail
         }
@@ -99,7 +97,6 @@ public class Zip {
             fileName[Int(fileInfo.size_filename)] = 0
 
             var pathString = String(cString: fileName)
-            
             guard pathString.count > 0 else {
                 throw ZipError.unzipFail
             }
@@ -122,19 +119,10 @@ public class Zip {
             }
 
             let creationDate = Date()
-
-            let directoryAttributes: [FileAttributeKey: Any]?
-            #if os(Linux)
-                // On Linux, setting attributes is not yet really implemented.
-                // In Swift 4.2, the only settable attribute is `.posixPermissions`.
-                // See https://github.com/apple/swift-corelibs-foundation/blob/swift-4.2-branch/Foundation/FileManager.swift#L182-L196
-                directoryAttributes = nil
-            #else
-                directoryAttributes = [
-                    .creationDate: creationDate,
-                    .modificationDate: creationDate
-                ]
-            #endif
+            let directoryAttributes: [FileAttributeKey: Any]? = [
+                .creationDate: creationDate,
+                .modificationDate: creationDate
+            ]
 
             do {
                 if isDirectory {
