@@ -93,7 +93,7 @@ public class Zip {
             let fileNameSize = Int(fileInfo.size_filename) + 1
             let fileName = UnsafeMutablePointer<CChar>.allocate(capacity: fileNameSize)
 
-            unzGetCurrentFileInfo64(zip, &fileInfo, fileName, UInt16(fileNameSize), nil, 0, nil, 0)
+            unzGetCurrentFileInfo64(zip, &fileInfo, fileName, UInt(fileNameSize), nil, 0, nil, 0)
             fileName[Int(fileInfo.size_filename)] = 0
 
             var pathString = String(cString: fileName)
@@ -255,11 +255,23 @@ public class Zip {
                 }
                 defer { fclose(input) }
                 let fileName = path.fileName
-                var zipInfo: zip_fileinfo = zip_fileinfo(dos_date: 0, internal_fa: 0, external_fa: 0)
+                var zipInfo: zip_fileinfo = zip_fileinfo(
+                    tmz_date: tm_zip(tm_sec: 0, tm_min: 0, tm_hour: 0, tm_mday: 0, tm_mon: 0, tm_year: 0),
+                    dosDate: 0,
+                    internal_fa: 0,
+                    external_fa: 0
+                )
                 do {
                     let fileAttributes = try fileManager.attributesOfItem(atPath: filePath)
                     if let fileDate = fileAttributes[FileAttributeKey.modificationDate] as? Date {
-                        zipInfo.dos_date = fileDate.dosDate
+                        let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: fileDate)
+                        zipInfo.tmz_date.tm_sec = UInt32(components.second!)
+                        zipInfo.tmz_date.tm_min = UInt32(components.minute!)
+                        zipInfo.tmz_date.tm_hour = UInt32(components.hour!)
+                        zipInfo.tmz_date.tm_mday = UInt32(components.day!)
+                        zipInfo.tmz_date.tm_mon = UInt32(components.month!) - 1
+                        zipInfo.tmz_date.tm_year = UInt32(components.year!)
+                        zipInfo.dosDate = fileDate.dosDate
                     }
                     if let fileSize = fileAttributes[FileAttributeKey.size] as? Double {
                         currentPosition += fileSize
@@ -269,9 +281,9 @@ public class Zip {
                     throw ZipError.zipFail
                 }
                 if let password, let fileName {
-                    zipOpenNewFileInZip3(zip, fileName, &zipInfo, nil, 0, nil, 0, nil, UInt16(Z_DEFLATED), compression.minizipCompression, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, 0)
+                    zipOpenNewFileInZip3(zip, fileName, &zipInfo, nil, 0, nil, 0, nil, Z_DEFLATED, compression.minizipCompression, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, 0)
                 } else if let fileName = fileName {
-                    zipOpenNewFileInZip3(zip, fileName, &zipInfo, nil, 0, nil, 0, nil, UInt16(Z_DEFLATED), compression.minizipCompression, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, nil, 0)
+                    zipOpenNewFileInZip3(zip, fileName, &zipInfo, nil, 0, nil, 0, nil, Z_DEFLATED, compression.minizipCompression, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, nil, 0)
                 } else {
                     throw ZipError.zipFail
                 }
@@ -336,14 +348,14 @@ public class Zip {
 }
 
 extension Date {
-    var dosDate: UInt32 {
+    var dosDate: UInt {
         let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: self)
-        let year = UInt32(components.year! - 1980) << 25
-        let month = UInt32(components.month!) << 21
-        let day = UInt32(components.day!) << 16
-        let hour = UInt32(components.hour!) << 11
-        let minute = UInt32(components.minute!) << 5
-        let second = UInt32(components.second!) >> 1
+        let year = UInt(components.year! - 1980) << 25
+        let month = UInt(components.month!) << 21
+        let day = UInt(components.day!) << 16
+        let hour = UInt(components.hour!) << 11
+        let minute = UInt(components.minute!) << 5
+        let second = UInt(components.second!) >> 1
 
         return year | month | day | hour | minute | second
     }

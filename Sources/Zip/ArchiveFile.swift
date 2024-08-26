@@ -88,13 +88,21 @@ extension Zip {
 
             // Setup the zip file info
             var zipInfo = zip_fileinfo(
-                dos_date: 0,
+                tmz_date: tm_zip(tm_sec: 0, tm_min: 0, tm_hour: 0, tm_mday: 0, tm_mon: 0, tm_year: 0),
+                dosDate: 0,
                 internal_fa: 0,
                 external_fa: 0
             )
 
             if let modifiedTime = archiveFile.modifiedTime {
-                zipInfo.dos_date = modifiedTime.dosDate
+                let calendar = Calendar.current
+                zipInfo.tmz_date.tm_sec = UInt32(calendar.component(.second, from: modifiedTime))
+                zipInfo.tmz_date.tm_min = UInt32(calendar.component(.minute, from: modifiedTime))
+                zipInfo.tmz_date.tm_hour = UInt32(calendar.component(.hour, from: modifiedTime))
+                zipInfo.tmz_date.tm_mday = UInt32(calendar.component(.day, from: modifiedTime))
+                zipInfo.tmz_date.tm_mon = UInt32(calendar.component(.month, from: modifiedTime))
+                zipInfo.tmz_date.tm_year = UInt32(calendar.component(.year, from: modifiedTime))
+                zipInfo.dosDate = modifiedTime.dosDate
             }
 
             // Write the data as a file to zip
@@ -102,7 +110,7 @@ extension Zip {
                 zip, archiveFile.filename, &zipInfo,
                 nil, 0, nil, 0,
                 nil,
-                UInt16(Z_DEFLATED),
+                Z_DEFLATED,
                 compression.minizipCompression,
                 0,
                 -MAX_WBITS,
