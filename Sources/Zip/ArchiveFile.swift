@@ -102,7 +102,6 @@ extension Zip {
                 zipInfo.tmz_date.tm_mday = UInt32(calendar.component(.day, from: modifiedTime))
                 zipInfo.tmz_date.tm_mon = UInt32(calendar.component(.month, from: modifiedTime))
                 zipInfo.tmz_date.tm_year = UInt32(calendar.component(.year, from: modifiedTime))
-                zipInfo.dosDate = modifiedTime.dosDate
             }
 
             // Write the data as a file to zip

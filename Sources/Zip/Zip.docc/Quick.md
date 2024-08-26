@@ -25,5 +25,7 @@ do {
 
 ### Quick Functions
 
+- ``Zip/quickZipFiles(_:fileName:)``
 - ``Zip/quickZipFiles(_:fileName:progress:)``
+- ``Zip/quickUnzipFile(_:)``
 - ``Zip/quickUnzipFile(_:progress:)``

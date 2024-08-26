@@ -119,10 +119,19 @@ public class Zip {
             }
 
             let creationDate = Date()
-            let directoryAttributes: [FileAttributeKey: Any]? = [
-                .creationDate: creationDate,
-                .modificationDate: creationDate
-            ]
+            let directoryAttributes: [FileAttributeKey: Any]?
+            #if os(Linux)
+                // On Linux, setting attributes is not yet really implemented.
+                // In Swift 4.2, the only settable attribute is `.posixPermissions`.
+                // See https://github.com/apple/swift-corelibs-foundation/blob/swift-4.2-branch/Foundation/FileManager.swift#L182-L196
+                // TODO: Check settable attributes in Swift 5.8+
+                directoryAttributes = nil
+            #else
+                directoryAttributes = [
+                    .creationDate: creationDate,
+                    .modificationDate: creationDate
+                ]
+            #endif
 
             do {
                 if isDirectory {
@@ -274,7 +283,6 @@ public class Zip {
                         zipInfo.tmz_date.tm_mday = UInt32(components.day!)
                         zipInfo.tmz_date.tm_mon = UInt32(components.month!) - 1
                         zipInfo.tmz_date.tm_year = UInt32(components.year!)
-                        zipInfo.dosDate = fileDate.dosDate
                     }
                     if let fileSize = fileAttributes[FileAttributeKey.size] as? Double {
                         currentPosition += fileSize
@@ -347,19 +355,5 @@ public class Zip {
     public class func isValidFileExtension(_ fileExtension: String) -> Bool {
         let validFileExtensions: Set<String> = customFileExtensions.union(["zip", "cbz"])
         return validFileExtensions.contains(fileExtension)
-    }
-}
-
-extension Date {
-    var dosDate: UInt {
-        let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: self)
-        let year = UInt(components.year! - 1980) << 25
-        let month = UInt(components.month!) << 21
-        let day = UInt(components.day!) << 16
-        let hour = UInt(components.hour!) << 11
-        let minute = UInt(components.minute!) << 5
-        let second = UInt(components.second!) >> 1
-
-        return year | month | day | hour | minute | second
     }
 }
