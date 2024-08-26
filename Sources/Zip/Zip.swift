@@ -120,11 +120,10 @@ public class Zip {
 
             let creationDate = Date()
             let directoryAttributes: [FileAttributeKey: Any]?
-            #if os(Linux)
+            #if os(Linux) && swift(<6.0)
                 // On Linux, setting attributes is not yet really implemented.
                 // In Swift 4.2, the only settable attribute is `.posixPermissions`.
                 // See https://github.com/apple/swift-corelibs-foundation/blob/swift-4.2-branch/Foundation/FileManager.swift#L182-L196
-                // TODO: Check settable attributes in Swift 5.8+
                 directoryAttributes = nil
             #else
                 directoryAttributes = [
@@ -147,9 +146,8 @@ public class Zip {
             }
 
             var writeBytes: UInt64 = 0
-            var filePointer: UnsafeMutablePointer<FILE>?
-            filePointer = fopen(fullPath, "wb")
-            while let filePointer {
+            while let filePointer = fopen(fullPath, "wb") {
+                defer { fclose(filePointer) }
                 let readBytes = unzReadCurrentFile(zip, &buffer, bufferSize)
                 if readBytes > 0 {
                     guard fwrite(buffer, Int(readBytes), 1, filePointer) == 1 else {
@@ -158,8 +156,6 @@ public class Zip {
                     writeBytes += UInt64(readBytes)
                 } else { break }
             }
-
-            if let filePointer { fclose(filePointer) }
 
             crc_ret = unzCloseCurrentFile(zip)
             if crc_ret == UNZ_CRCERROR {
