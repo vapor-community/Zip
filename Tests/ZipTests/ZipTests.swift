@@ -303,9 +303,9 @@ final class ZipTests: XCTestCase {
     }
 
     func testDosDate() {
-        XCTAssertEqual(0b10000011001100011000110000110001, Date(timeIntervalSince1970: 2389275215).dosDate)
-        XCTAssertEqual(0b00000001001100011000110000110001, Date(timeIntervalSince1970: 338052815).dosDate)
-        XCTAssertEqual(0b00000000001000010000000000000000, Date(timeIntervalSince1970: 315529200).dosDate)
+        XCTAssertEqual(0b10000011001100011000110000110001, Date(timeIntervalSince1970: 2389278815).dosDate)
+        XCTAssertEqual(0b00000001001100011000110000110001, Date(timeIntervalSince1970: 338056415).dosDate)
+        XCTAssertEqual(0b00000000001000010000000000000000, Date(timeIntervalSince1970: 315532800).dosDate)
     }
 
     func testInit() {
