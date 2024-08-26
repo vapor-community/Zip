@@ -11,7 +11,12 @@ import XCTest
 
 final class ZipTests: XCTestCase {
     private func url(forResource resource: String, withExtension ext: String? = nil) -> URL? {
-        let resourcePath = URL(fileURLWithPath: String(#file))
+        #if swift(>=6.0)
+        let filePath = URL(fileURLWithPath: #file)
+        #else
+        let filePath = URL(fileURLWithPath: #filePath)
+        #endif
+        let resourcePath = filePath
             .deletingLastPathComponent()
             .appendingPathComponent("Resources")
             .appendingPathComponent(resource)

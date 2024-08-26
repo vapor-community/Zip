@@ -10,6 +10,9 @@ let package = Package(
         .target(
             name: "Minizip",
             exclude: ["module"],
+            swiftSettings: [
+                .enableUpcomingFeature("ConciseMagicFile"),
+            ],
             linkerSettings: [
                 .linkedLibrary("z")
             ]
@@ -18,6 +21,9 @@ let package = Package(
             name: "Zip",
             dependencies: [
                 .target(name: "Minizip"),
+            ],
+            swiftSettings: [
+                .enableUpcomingFeature("ConciseMagicFile"),
             ]
         ),
         .testTarget(
@@ -27,6 +33,9 @@ let package = Package(
             ],
             resources: [
                 .copy("Resources"),
+            ],
+            swiftSettings: [
+                .enableUpcomingFeature("ConciseMagicFile"),
             ]
         ),
     ]
