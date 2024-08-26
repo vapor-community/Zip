@@ -318,7 +318,6 @@ final class ZipTests: XCTestCase {
     // Tests if https://github.com/vapor-community/Zip/issues/4 does not occur anymore.
     func testRoundTripping() throws {
         // "prod-apple-swift-metrics-main-e6a00d36.zip" is the original zip file from the issue.
-
         let zipFilePath = url(forResource: "prod-apple-swift-metrics-main-e6a00d36", withExtension: "zip")!
         let failDestinationPath = try autoRemovingSandbox()
         XCTAssertThrowsError(try Zip.unzipFile(zipFilePath, destination: failDestinationPath, overwrite: true))
@@ -330,27 +329,14 @@ final class ZipTests: XCTestCase {
         // "prod-apple-swift-metrics-main-e6a00d36-test.zip" is a zip file
         // that was created by unzipping the original zip file with Finder on macOS 14.6.1
         // and then zipping it again using vapor-community/Zip v2.2.0.
-
         let testZipFilePath = url(forResource: "prod-apple-swift-metrics-main-e6a00d36-test", withExtension: "zip")!
         let destinationPath = try autoRemovingSandbox()
         XCTAssertNoThrow(try Zip.unzipFile(testZipFilePath, destination: destinationPath, overwrite: true))
 
         let destinationFolder = destinationPath.appendingPathComponent("prod-apple-swift-metrics-main-e6a00d36")
-        XCTAssertTrue(
-            FileManager.default.fileExists(
-                atPath: destinationFolder.appendingPathComponent("metadata.json").path
-            )
-        )
-        XCTAssertTrue(
-            FileManager.default.fileExists(
-                atPath: destinationFolder.appendingPathComponent("main/index.html").path
-            )
-        )
-        XCTAssertTrue(
-            FileManager.default.fileExists(
-                atPath: destinationFolder.appendingPathComponent("main/index/index.json").path
-            )
-        )
+        XCTAssert(FileManager.default.fileExists(atPath: destinationFolder.appendingPathComponent("metadata.json").path))
+        XCTAssert(FileManager.default.fileExists(atPath: destinationFolder.appendingPathComponent("main/index.html").path))
+        XCTAssert(FileManager.default.fileExists(atPath: destinationFolder.appendingPathComponent("main/index/index.json").path))
 
         let unzippedFiles = try FileManager.default.contentsOfDirectory(atPath: destinationFolder.path)
 
@@ -361,21 +347,9 @@ final class ZipTests: XCTestCase {
         try Zip.unzipFile(newZipFilePath, destination: newDestinationPath, overwrite: true)
 
         let newDestinationFolder = newDestinationPath.appendingPathComponent("prod-apple-swift-metrics-main-e6a00d36")
-        XCTAssertTrue(
-            FileManager.default.fileExists(
-                atPath: newDestinationFolder.appendingPathComponent("metadata.json").path
-            )
-        )
-        XCTAssertTrue(
-            FileManager.default.fileExists(
-                atPath: newDestinationFolder.appendingPathComponent("main/index.html").path
-            )
-        )
-        XCTAssertTrue(
-            FileManager.default.fileExists(
-                atPath: newDestinationFolder.appendingPathComponent("main/index/index.json").path
-            )
-        )
+        XCTAssert(FileManager.default.fileExists(atPath: newDestinationFolder.appendingPathComponent("metadata.json").path))
+        XCTAssert(FileManager.default.fileExists(atPath: newDestinationFolder.appendingPathComponent("main/index.html").path))
+        XCTAssert(FileManager.default.fileExists(atPath: newDestinationFolder.appendingPathComponent("main/index/index.json").path))
 
         let newUnzippedFiles = try FileManager.default.contentsOfDirectory(atPath: newDestinationFolder.path)
         XCTAssertEqual(unzippedFiles, newUnzippedFiles)
