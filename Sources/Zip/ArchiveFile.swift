@@ -1,10 +1,3 @@
-//
-//  ArchiveFile.swift
-//  Zip
-//
-//  Created by Francesco Paolo Severino on 16/08/2024.
-//
-
 import Foundation
 @_implementationOnly import Minizip
 

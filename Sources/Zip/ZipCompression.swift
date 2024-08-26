@@ -1,10 +1,3 @@
-//
-//  ZipCompression.swift
-//  Zip
-//
-//  Created by Francesco Paolo Severino on 16/08/2024.
-//
-
 @_implementationOnly import Minizip
 
 /// Zip compression strategies.

@@ -1,10 +1,3 @@
-//
-//  Date+dosDate.swift
-//  Zip
-//
-//  Created by Francesco Paolo Severino on 26/08/2024.
-//
-
 import Foundation
 
 extension Date {
