@@ -138,8 +138,9 @@ public class Zip {
             }
 
             var writeBytes: UInt64 = 0
-            while let filePointer = fopen(fullPath, "wb") {
-                defer { fclose(filePointer) }
+            var filePointer: UnsafeMutablePointer<FILE>?
+            filePointer = fopen(fullPath, "wb")
+            while let filePointer {
                 let readBytes = unzReadCurrentFile(zip, &buffer, bufferSize)
                 if readBytes > 0 {
                     guard fwrite(buffer, Int(readBytes), 1, filePointer) == 1 else {
@@ -148,6 +149,8 @@ public class Zip {
                     writeBytes += UInt64(readBytes)
                 } else { break }
             }
+
+            if let filePointer { fclose(filePointer) }
 
             crc_ret = unzCloseCurrentFile(zip)
             if crc_ret == UNZ_CRCERROR {
@@ -282,7 +285,7 @@ public class Zip {
                 }
                 if let password, let fileName {
                     zipOpenNewFileInZip3(zip, fileName, &zipInfo, nil, 0, nil, 0, nil, Z_DEFLATED, compression.minizipCompression, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, password, 0)
-                } else if let fileName = fileName {
+                } else if let fileName {
                     zipOpenNewFileInZip3(zip, fileName, &zipInfo, nil, 0, nil, 0, nil, Z_DEFLATED, compression.minizipCompression, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY, nil, 0)
                 } else {
                     throw ZipError.zipFail
