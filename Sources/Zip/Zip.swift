@@ -149,12 +149,11 @@ public class Zip {
             let filePointer: UnsafeMutablePointer<FILE>? = fopen(fullPath, "wb")
             while let filePointer {
                 let readBytes = unzReadCurrentFile(zip, &buffer, bufferSize)
-                if readBytes > 0 {
-                    guard fwrite(buffer, Int(readBytes), 1, filePointer) == 1 else {
-                        throw ZipError.unzipFail
-                    }
-                    writeBytes += UInt64(readBytes)
-                } else { break }
+                guard readBytes > 0 else { break }
+                guard fwrite(buffer, Int(readBytes), 1, filePointer) == 1 else {
+                    throw ZipError.unzipFail
+                }
+                writeBytes += UInt64(readBytes)
             }
 
             if let filePointer { fclose(filePointer) }
