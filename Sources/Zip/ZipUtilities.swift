@@ -50,9 +50,9 @@ internal class ZipUtilities {
     /**
     Process zip paths
     
-    - parameter paths: Paths as NSURL.
+    - parameter paths: Paths as `URL`.
     
-    - returns: Array of ProcessedFilePath structs.
+    - returns: Array of `ProcessedFilePath` structs.
     */
     internal func processZipPaths(_ paths: [URL]) -> [ProcessedFilePath] {
         var processedFilePaths = [ProcessedFilePath]()
@@ -71,13 +71,12 @@ internal class ZipUtilities {
         return processedFilePaths
     }
     
-    
     /**
      Expand directory contents and parse them into ProcessedFilePath structs.
      
-     - parameter directory: Path of folder as NSURL.
+     - parameter directory: Path of folder as `URL`.
      
-     - returns: Array of ProcessedFilePath structs.
+     - returns: Array of `ProcessedFilePath` structs.
      */
     internal func expandDirectoryFilePath(_ directory: URL) -> [ProcessedFilePath] {
         var processedFilePaths = [ProcessedFilePath]()
@@ -102,5 +101,4 @@ internal class ZipUtilities {
         }
         return processedFilePaths
     }
-
 }

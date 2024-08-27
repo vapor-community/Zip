@@ -20,17 +20,17 @@
 A framework for zipping and unzipping files in Swift.
 
 Simple and quick to use.
-Built on top of [minizip](https://github.com/nmoinvaz/minizip).
+Built on top of [Minizip 1.2](https://github.com/zlib-ng/minizip-ng/tree/1.2).
 
 Use the SPM string to easily include the dependendency in your `Package.swift` file.
 
 ```swift
-.package(url: "https://github.com/vapor-community/Zip.git", from: "2.1.3")
+.package(url: "https://github.com/vapor-community/Zip.git", from: "2.2.0")
 ```
 
 ## Usage
 
-### Quick functions
+### Quick Functions
 
 The easiest way to use Zip is through quick functions. Both take local file paths as `URL`s, throw if an error is encountered and return an `URL` to the destination if successful.
 
@@ -48,7 +48,7 @@ do {
 
 ### Advanced Zip
 
-For more advanced usage, Zip has functions that let you set custom destination paths, work with password protected zips and use a progress handling closure. These functions throw if there is an error but don't return.
+For more advanced usage, Zip has functions that let you set custom destination paths, work with password protected zips and use a progress handling closure. These functions throw if there is an error, but don't return.
 
 ```swift
 import Zip
@@ -56,14 +56,31 @@ import Zip
 do {
   let filePath = Bundle.main.url(forResource: "file", withExtension: "zip")!
   let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-  try Zip.unzipFile(filePath, destination: documentsDirectory, overwrite: true,password: "password", progress: { (progress) -> () in
+  try Zip.unzipFile(filePath, destination: documentsDirectory, overwrite: true, password: "password") { progress in
     print(progress)
-  })
+  }
 
   let zipFilePath = documentsFolder.appendingPathComponent("archive.zip")
-  try Zip.zipFiles([filePath], zipFilePath: zipFilePath, password: "password", progress: { (progress) -> () in
+  try Zip.zipFiles([filePath], zipFilePath: zipFilePath, password: "password") { progress in
     print(progress)
-  })
+  }
+} catch {
+  print("Something went wrong")
+}
+```
+
+# Archive Data saved in memory
+
+Zip provides a way to archive data saved in memory.
+This is useful when you want to create a zip archive without having the source files saved to disk.
+
+```swift
+import Zip
+
+do {
+  let archiveFile = ArchiveFile(filename: "file.txt", data: "Hello, World!".data(using: .utf8)!)
+  let zipFilePath = FileManager.default.temporaryDirectory.appendingPathComponent("archive.zip")
+  try Zip.zipData(archiveFiles: [archiveFile], zipFilePath: zipFilePath)
 } catch {
   print("Something went wrong")
 }
