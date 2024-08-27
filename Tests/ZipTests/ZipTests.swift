@@ -45,6 +45,8 @@ final class ZipTests: XCTestCase {
             try? FileManager.default.removeItem(at: destinationURL)
         }
         XCTAssertTrue(FileManager.default.fileExists(atPath: destinationURL.path))
+        try XCTAssertGreaterThan(Data(contentsOf: destinationURL.appendingPathComponent("3crBXeO.gif")).count, 0)
+        try XCTAssertGreaterThan(Data(contentsOf: destinationURL.appendingPathComponent("kYkLkPf.gif")).count, 0)
     }
     
     func testQuickUnzipNonExistingPath() {
@@ -59,12 +61,15 @@ final class ZipTests: XCTestCase {
     
     func testQuickUnzipProgress() throws {
         let filePath = url(forResource: "bb8", withExtension: "zip")!
-        let destinationURL = try Zip.quickUnzipFile(filePath, progress: { progress in
+        let destinationURL = try Zip.quickUnzipFile(filePath) { progress in
             XCTAssertFalse(progress.isNaN)
-        })
+        }
         addTeardownBlock {
             try? FileManager.default.removeItem(at: destinationURL)
         }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: destinationURL.path))
+        try XCTAssertGreaterThan(Data(contentsOf: destinationURL.appendingPathComponent("3crBXeO.gif")).count, 0)
+        try XCTAssertGreaterThan(Data(contentsOf: destinationURL.appendingPathComponent("kYkLkPf.gif")).count, 0)
     }
     
     func testQuickUnzipOnlineURL() {
@@ -79,6 +84,8 @@ final class ZipTests: XCTestCase {
         XCTAssertNoThrow(try Zip.unzipFile(filePath, destination: destinationPath, overwrite: true, password: "password", progress: nil))
 
         XCTAssertTrue(FileManager.default.fileExists(atPath: destinationPath.path))
+        try XCTAssertGreaterThan(Data(contentsOf: destinationPath.appendingPathComponent("3crBXeO.gif")).count, 0)
+        try XCTAssertGreaterThan(Data(contentsOf: destinationPath.appendingPathComponent("kYkLkPf.gif")).count, 0)
     }
     
     func testImplicitProgressUnzip() throws {
@@ -113,7 +120,8 @@ final class ZipTests: XCTestCase {
         let imageURL1 = url(forResource: "3crBXeO", withExtension: "gif")!
         let imageURL2 = url(forResource: "kYkLkPf", withExtension: "gif")!
         let destinationURL = try Zip.quickZipFiles([imageURL1, imageURL2], fileName: "archive")
-        XCTAssertTrue(FileManager.default.fileExists(atPath:destinationURL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: destinationURL.path))
+        try XCTAssertGreaterThan(Data(contentsOf: destinationURL).count, 0)
         addTeardownBlock {
             try? FileManager.default.removeItem(at: destinationURL)
         }
@@ -126,6 +134,7 @@ final class ZipTests: XCTestCase {
             XCTAssertFalse(progress.isNaN)
         }
         XCTAssertTrue(FileManager.default.fileExists(atPath:destinationURL.path))
+        try XCTAssertGreaterThan(Data(contentsOf: destinationURL).count, 0)
         addTeardownBlock {
             try? FileManager.default.removeItem(at: destinationURL)
         }
@@ -337,6 +346,7 @@ final class ZipTests: XCTestCase {
         XCTAssert(FileManager.default.fileExists(atPath: destinationFolder.appendingPathComponent("metadata.json").path))
         XCTAssert(FileManager.default.fileExists(atPath: destinationFolder.appendingPathComponent("main/index.html").path))
         XCTAssert(FileManager.default.fileExists(atPath: destinationFolder.appendingPathComponent("main/index/index.json").path))
+        try XCTAssertGreaterThan(Data(contentsOf: destinationFolder.appendingPathComponent("metadata.json")).count, 0)
 
         let unzippedFiles = try FileManager.default.contentsOfDirectory(atPath: destinationFolder.path)
 
@@ -350,6 +360,7 @@ final class ZipTests: XCTestCase {
         XCTAssert(FileManager.default.fileExists(atPath: newDestinationFolder.appendingPathComponent("metadata.json").path))
         XCTAssert(FileManager.default.fileExists(atPath: newDestinationFolder.appendingPathComponent("main/index.html").path))
         XCTAssert(FileManager.default.fileExists(atPath: newDestinationFolder.appendingPathComponent("main/index/index.json").path))
+        try XCTAssertGreaterThan(Data(contentsOf: newDestinationFolder.appendingPathComponent("metadata.json")).count, 0)
 
         let newUnzippedFiles = try FileManager.default.contentsOfDirectory(atPath: newDestinationFolder.path)
         XCTAssertEqual(unzippedFiles, newUnzippedFiles)

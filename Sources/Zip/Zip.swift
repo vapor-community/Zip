@@ -112,8 +112,8 @@ public class Zip {
             }
 
             let fullPath = destination.appendingPathComponent(pathString).standardized.path
-            // `.standardized` removes any ".. to move a level up".
-            // If we then check that the `fullPath` starts with the destination directory we know we are not extracting "outside" te destination.
+            // `.standardized` removes any `..` to move a level up.
+            // If we then check that the `fullPath` starts with the destination directory we know we are not extracting "outside" the destination.
             guard fullPath.starts(with: destination.standardized.path) else {
                 throw ZipError.unzipFail
             }
@@ -146,16 +146,17 @@ public class Zip {
             }
 
             var writeBytes: UInt64 = 0
-            while let filePointer = fopen(fullPath, "wb") {
-                defer { fclose(filePointer) }
+            let filePointer: UnsafeMutablePointer<FILE>? = fopen(fullPath, "wb")
+            while let filePointer {
                 let readBytes = unzReadCurrentFile(zip, &buffer, bufferSize)
-                if readBytes > 0 {
-                    guard fwrite(buffer, Int(readBytes), 1, filePointer) == 1 else {
-                        throw ZipError.unzipFail
-                    }
-                    writeBytes += UInt64(readBytes)
-                } else { break }
+                guard readBytes > 0 else { break }
+                guard fwrite(buffer, Int(readBytes), 1, filePointer) == 1 else {
+                    throw ZipError.unzipFail
+                }
+                writeBytes += UInt64(readBytes)
             }
+
+            if let filePointer { fclose(filePointer) }
 
             crc_ret = unzCloseCurrentFile(zip)
             if crc_ret == UNZ_CRCERROR {
@@ -182,7 +183,7 @@ public class Zip {
             
             // Update progress handler
             if let progressHandler = progress {
-                progressHandler((currentPosition/totalSize))
+                progressHandler((currentPosition / totalSize))
             }
             
             if let fileHandler = fileOutputHandler,
