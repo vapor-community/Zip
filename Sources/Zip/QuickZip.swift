@@ -9,15 +9,6 @@
 import Foundation
 
 extension Zip { 
-    // Get search path directory. For tvOS Documents directory doesn't exist.
-    fileprivate class var searchPathDirectory: FileManager.SearchPathDirectory {
-        #if os(tvOS)
-        .cachesDirectory
-        #else
-        .documentDirectory
-        #endif
-    }
-
     /**
      Quickly unzips a file.
      
@@ -49,11 +40,8 @@ extension Zip {
      - Returns: `URL` of the destination folder.
      */
     public class func quickUnzipFile(_ path: URL, progress: ((_ progress: Double) -> ())?) throws -> URL {
-        let fileExtension = path.pathExtension
-        let fileName = path.lastPathComponent
-        let directoryName = fileName.replacingOccurrences(of: ".\(fileExtension)", with: "")
-        let documentsUrl = FileManager.default.urls(for: self.searchPathDirectory, in: .userDomainMask)[0]
-        let destinationUrl = documentsUrl.appendingPathComponent(directoryName, isDirectory: true)
+        let directoryName = path.lastPathComponent.replacingOccurrences(of: ".\(path.pathExtension)", with: "")
+        let destinationUrl = FileManager.default.temporaryDirectory.appendingPathComponent(directoryName, isDirectory: true)
         try self.unzipFile(path, destination: destinationUrl, progress: progress)
         return destinationUrl
     }
@@ -90,8 +78,7 @@ extension Zip {
      - Returns: `URL` of the destination folder.
      */
     public class func quickZipFiles(_ paths: [URL], fileName: String, progress: ((_ progress: Double) -> ())?) throws -> URL {
-        let documentsUrl = FileManager.default.urls(for: self.searchPathDirectory, in: .userDomainMask)[0] as URL
-        let destinationUrl = documentsUrl.appendingPathComponent("\(fileName).zip")
+        let destinationUrl = FileManager.default.temporaryDirectory.appendingPathComponent("\(fileName).zip")
         try self.zipFiles(paths: paths, zipFilePath: destinationUrl, progress: progress)
         return destinationUrl
     }
