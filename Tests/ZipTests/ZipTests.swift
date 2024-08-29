@@ -119,7 +119,7 @@ final class ZipTests: XCTestCase {
     func testQuickZip() throws {
         let imageURL1 = url(forResource: "3crBXeO", withExtension: "gif")!
         let imageURL2 = url(forResource: "kYkLkPf", withExtension: "gif")!
-        let destinationURL = try Zip.quickZipFiles([imageURL1, imageURL2], fileName: "archive")
+        let destinationURL = try Zip.quickZipFiles([imageURL1, imageURL2], fileName: "archive.zip")
         XCTAssertTrue(FileManager.default.fileExists(atPath: destinationURL.path))
         try XCTAssertGreaterThan(Data(contentsOf: destinationURL).count, 0)
         addTeardownBlock {
