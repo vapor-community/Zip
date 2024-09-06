@@ -7,7 +7,7 @@
 //
 
 import Foundation
-@_implementationOnly import Minizip
+@_implementationOnly import CMinizip
 
 /// Main class that handles zipping and unzipping of files.
 public class Zip {
@@ -77,7 +77,7 @@ public class Zip {
             if let cPassword = password?.cString(using: String.Encoding.ascii) {
                 ret = unzOpenCurrentFilePassword(zip, cPassword)
             } else {
-                ret = unzOpenCurrentFile(zip);
+                ret = unzOpenCurrentFile(zip)
             }
             if ret != UNZ_OK {
                 throw ZipError.unzipFail
@@ -92,21 +92,22 @@ public class Zip {
             currentPosition += Double(fileInfo.compressed_size)
             let fileNameSize = Int(fileInfo.size_filename) + 1
             let fileName = UnsafeMutablePointer<CChar>.allocate(capacity: fileNameSize)
+            defer { fileName.deallocate() }
 
             unzGetCurrentFileInfo64(zip, &fileInfo, fileName, UInt16(fileNameSize), nil, 0, nil, 0)
             fileName[Int(fileInfo.size_filename)] = 0
 
             var pathString = String(cString: fileName)
-            guard pathString.count > 0 else {
+            guard !pathString.isEmpty else {
                 throw ZipError.unzipFail
             }
 
             var isDirectory = false
             let fileInfoSizeFileName = Int(fileInfo.size_filename-1)
             if (fileName[fileInfoSizeFileName] == "/".cString(using: String.Encoding.utf8)?.first || fileName[fileInfoSizeFileName] == "\\".cString(using: String.Encoding.utf8)?.first) {
-                isDirectory = true;
+                isDirectory = true
             }
-            free(fileName)
+            
             if pathString.rangeOfCharacter(from: CharacterSet(charactersIn: "/\\")) != nil {
                 pathString = pathString.replacingOccurrences(of: "\\", with: "/")
             }

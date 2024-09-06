@@ -45,7 +45,7 @@ internal class ZipUtilities {
         }
     }
     
-    //MARK: Path processing
+    // MARK: Path processing
     
     /**
     Process zip paths

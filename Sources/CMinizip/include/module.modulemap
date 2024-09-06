@@ -1,0 +1,4 @@
+module CMinizip [system][extern_c] {
+    header "CMinizip.h"
+    export *
+}
