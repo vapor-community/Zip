@@ -33,6 +33,9 @@ jobs:
         with:
           branch: ${{ matrix.swift-branch }}
           tag: ${{ matrix.swift-tag }}
+      - name: Install zlib
+        run: |
+          choco install zlib
       - name: Check out code
         uses: actions/checkout@v4
       - name: Run unit tests
