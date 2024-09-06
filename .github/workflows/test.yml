@@ -33,11 +33,18 @@ jobs:
         with:
           branch: ${{ matrix.swift-branch }}
           tag: ${{ matrix.swift-tag }}
-      - name: Install zlib
+      - name: Download zlib
         run: |
-          choco install zlib
+          curl -L -o zlib.zip https://zlib.net/zlib1211.zip
+          tar -xf zlib.zip
+          cd zlib-1.2.11
+          mkdir build
+          cd build
+          cmake ..
+          cmake --build . --config Release
+          cmake --install . --prefix ../install
       - name: Check out code
         uses: actions/checkout@v4
       - name: Run unit tests
         run: |
-          swift test -Xcc -Izlib/include -Xlinker -Lzlib/lib
+          swift test -Xcc -Izlib-1.2.11/install/include -Xlinker -Lzlib-1.2.11/install/lib
