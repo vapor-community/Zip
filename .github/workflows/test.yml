@@ -11,3 +11,30 @@ jobs:
     uses: vapor/ci/.github/workflows/run-unit-tests.yml@main
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+  windows-unit:
+    if: ${{ !(github.event.pull_request.draft || false) }}
+    strategy:
+      fail-fast: false
+      matrix:
+        swift-version:
+          - 5.8
+          - 5.9
+          - 5.10
+        include:
+          - { swift-version: 5.8, swift-branch: swift-5.8.1-RELEASE, swift-tag: 5.8.1-RELEASE }
+          - { swift-version: 5.9, swift-branch: swift-5.9.2-RELEASE, swift-tag: 5.9.2-RELEASE }
+          - { swift-version: 5.10, swift-branch: swift-5.10.1-RELEASE, swift-tag: 5.10.1-RELEASE }
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - name: Install Windows Swift toolchain
+        uses: compnerd/gha-setup-swift@main
+        with:
+          branch: ${{ matrix.swift-branch }}
+          tag: ${{ matrix.swift-tag }}
+      - name: Check out code
+        uses: actions/checkout@v4
+      - name: Run unit tests
+        run: |
+          SWIFT_DETERMINISTIC_HASHING=1 swift test --sanitize=thread
