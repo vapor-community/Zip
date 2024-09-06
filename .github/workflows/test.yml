@@ -37,4 +37,4 @@ jobs:
         uses: actions/checkout@v4
       - name: Run unit tests
         run: |
-          swift test
+          swift test -Xcc -Izlib/include -Xlinker -Lzlib/lib
