@@ -22,9 +22,9 @@ jobs:
           - 5.9
           - 5.10
         include:
-          - { swift-version: 5.8, swift-branch: swift-5.8.1-RELEASE, swift-tag: 5.8.1-RELEASE }
-          - { swift-version: 5.9, swift-branch: swift-5.9.2-RELEASE, swift-tag: 5.9.2-RELEASE }
-          - { swift-version: 5.10, swift-branch: swift-5.10.1-RELEASE, swift-tag: 5.10.1-RELEASE }
+          - { swift-version: 5.8, swift-branch: swift-5.8.1-release, swift-tag: 5.8.1-RELEASE }
+          - { swift-version: 5.9, swift-branch: swift-5.9.2-release, swift-tag: 5.9.2-RELEASE }
+          - { swift-version: 5.10, swift-branch: swift-5.10.1-release, swift-tag: 5.10.1-RELEASE }
     runs-on: windows-latest
     timeout-minutes: 60
     steps:

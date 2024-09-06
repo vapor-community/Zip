@@ -183,12 +183,10 @@ final class ZipTests: XCTestCase {
         let unzipDestination = try Zip.quickUnzipFile(permissionsURL)
         let permission644 = unzipDestination.appendingPathComponent("unsupported_permission").appendingPathExtension("txt")
         let foundPermissions = try FileManager.default.attributesOfItem(atPath: permission644.path)[.posixPermissions] as? Int
-        #if os(Linux)
-        let expectedPermissions = 0o664
-        #elseif os(Windows)
+        #if os(Windows)
         let expectedPermissions = 0o700
         #else
-        let expectedPermissions = 0o644
+        let expectedPermissions = 0o664
         #endif
         XCTAssertNotNil(foundPermissions)
         XCTAssertEqual(
