@@ -1,5 +1,6 @@
 // swift-tools-version:5.8
 import PackageDescription
+import Foundation
 
 let package = Package(
     name: "Zip",
