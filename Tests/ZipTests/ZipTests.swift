@@ -186,7 +186,7 @@ final class ZipTests: XCTestCase {
         #if os(Windows)
         let expectedPermissions = 0o700
         #else
-        let expectedPermissions = 0o664
+        let expectedPermissions = 0o644
         #endif
         XCTAssertNotNil(foundPermissions)
         XCTAssertEqual(
