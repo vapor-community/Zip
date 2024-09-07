@@ -36,7 +36,7 @@ jobs:
       - name: Download zlib
         run: |
           curl -L -o zlib.zip https://zlib.net/zlib1211.zip
-          tar -xf zlib.zip
+          7z x zlib.zip -ozlib-1.2.11
           cd zlib-1.2.11
           mkdir build
           cd build
