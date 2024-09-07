@@ -50,4 +50,4 @@ jobs:
         uses: actions/checkout@v4
       - name: Run unit tests
         run: |
-          swift test -Xcc -I${{ github.workspace }}\zlib-131\install\include -Xlinker -L${{ github.workspace }}\zlib-131\install\lib
+          swift test -Xcc -IC:/Program\ Files\ \(x86\)/zlib/include -Xlinker -LC:/Program\ Files\ \(x86\)/zlib/lib
