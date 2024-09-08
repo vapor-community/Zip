@@ -103,7 +103,7 @@ public class Zip {
             }
 
             var isDirectory = false
-            let fileInfoSizeFileName = Int(fileInfo.size_filename-1)
+            let fileInfoSizeFileName = Int(fileInfo.size_filename - 1)
             if (fileName[fileInfoSizeFileName] == "/".cString(using: String.Encoding.utf8)?.first || fileName[fileInfoSizeFileName] == "\\".cString(using: String.Encoding.utf8)?.first) {
                 isDirectory = true
             }
@@ -121,7 +121,7 @@ public class Zip {
 
             let creationDate = Date()
             let directoryAttributes: [FileAttributeKey: Any]?
-            #if os(Linux) && swift(<6.0)
+            #if (os(Linux) || os(Windows)) && swift(<6.0)
                 // On Linux, setting attributes is not yet really implemented.
                 // In Swift 4.2, the only settable attribute is `.posixPermissions`.
                 // See https://github.com/apple/swift-corelibs-foundation/blob/swift-4.2-branch/Foundation/FileManager.swift#L182-L196
@@ -170,10 +170,15 @@ public class Zip {
             // Set file permissions from current `fileInfo`
             if fileInfo.external_fa != 0 {
                 let permissions = (fileInfo.external_fa >> 16) & 0x1FF
-                // We will devifne a valid permission range between Owner read only to full access
+                // We will define a valid permission range between Owner read only to full access
                 if permissions >= 0o400 && permissions <= 0o777 {
                     do {
+                        // TODO: Set permissions properly on Windows
+                        #if os(Windows)
+                        try fileManager.setAttributes([.posixPermissions : 0o666], ofItemAtPath: fullPath)
+                        #else
                         try fileManager.setAttributes([.posixPermissions : permissions], ofItemAtPath: fullPath)
+                        #endif
                     } catch {
                         print("Failed to set permissions to file \(fullPath), error: \(error)")
                     }
