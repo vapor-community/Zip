@@ -175,7 +175,7 @@ public class Zip {
                     do {
                         // TODO: Set permissions properly on Windows
                         #if os(Windows)
-                        try fileManager.setAttributes([.posixPermissions : 0o666], ofItemAtPath: fullPath)
+                        try fileManager.setAttributes([.posixPermissions : NSNumber(value: Int16(0o600))], ofItemAtPath: fullPath)
                         #else
                         try fileManager.setAttributes([.posixPermissions : permissions], ofItemAtPath: fullPath)
                         #endif
