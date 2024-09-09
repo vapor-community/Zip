@@ -145,14 +145,10 @@ public class Zip {
 
             var writeBytes: UInt64 = 0
             #if os(Windows)
-            func sanitizeFileName(_ fileName: String) -> String {
-                if fileName.count > 2 && fileName[1] == ":" {
-                    return fileName.prefix(2) + fileName.dropFirst(2).replacingOccurrences(of: ":", with: "%3A")
-                } else {
-                    return fileName.replacingOccurrences(of: ":", with: "%3A")
-                }
-            }
-            let filePointer: UnsafeMutablePointer<FILE>? = fopen(sanitizeFileName(fullPath), "wb")
+            let filePointer: UnsafeMutablePointer<FILE>? = fopen(
+                sanitizeFileName(fullPath.prefix(2) + fullPath.dropFirst(2).replacingOccurrences(of: ":", with: "%3A")),
+                "wb"
+            )
             #else
             let filePointer: UnsafeMutablePointer<FILE>? = fopen(fullPath, "wb")
             #endif
