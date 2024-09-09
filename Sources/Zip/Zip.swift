@@ -166,20 +166,20 @@ public class Zip {
 
             // Set file permissions from current `fileInfo`
             if fileInfo.external_fa != 0 {
+                // TODO: Set permissions properly on Windows
+                #if os(Windows)
+                try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: fullPath)
+                #else
                 let permissions = (fileInfo.external_fa >> 16) & 0x1FF
                 // We will define a valid permission range between Owner read only to full access
                 if permissions >= 0o400 && permissions <= 0o777 {
                     do {
-                        // TODO: Set permissions properly on Windows
-                        #if os(Windows)
-                        try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: fullPath)
-                        #else
                         try FileManager.default.setAttributes([.posixPermissions: permissions], ofItemAtPath: fullPath)
-                        #endif
                     } catch {
                         print("Failed to set permissions to file \(fullPath), error: \(error)")
                     }
                 }
+                #endif
             }
 
             ret = unzGoToNextFile(zip)
