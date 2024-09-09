@@ -101,6 +101,7 @@ public class Zip {
 
             var isDirectory = false
             let fileInfoSizeFileName = Int(fileInfo.size_filename - 1)
+            print("fileName[fileInfoSizeFileName] = \(fileName[fileInfoSizeFileName])")
             if (fileName[fileInfoSizeFileName] == "/".cString(using: String.Encoding.utf8)?.first || fileName[fileInfoSizeFileName] == "\\".cString(using: String.Encoding.utf8)?.first) {
                 isDirectory = true
             }
@@ -144,14 +145,7 @@ public class Zip {
             }
 
             var writeBytes: UInt64 = 0
-            #if os(Windows)
-            let filePointer: UnsafeMutablePointer<FILE>? = fopen(
-                fullPath.prefix(2) + fullPath.dropFirst(2).replacingOccurrences(of: ":", with: "/"),
-                "wb"
-            )
-            #else
             let filePointer: UnsafeMutablePointer<FILE>? = fopen(fullPath, "wb")
-            #endif
             while let filePointer {
                 let readBytes = unzReadCurrentFile(zip, &buffer, bufferSize)
                 guard readBytes > 0 else { break }
