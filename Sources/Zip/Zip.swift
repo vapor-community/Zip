@@ -171,11 +171,7 @@ public class Zip {
                 if permissions >= 0o400 && permissions <= 0o777 {
                     do {
                         // TODO: Set permissions properly on Windows
-                        #if os(Windows)
-                        try FileManager.default.setAttributes([.posixPermissions : NSNumber(value: Int16(0o600))], ofItemAtPath: fullPath)
-                        #else
                         try FileManager.default.setAttributes([.posixPermissions : permissions], ofItemAtPath: fullPath)
-                        #endif
                     } catch {
                         print("Failed to set permissions to file \(fullPath), error: \(error)")
                     }

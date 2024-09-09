@@ -342,14 +342,11 @@ final class ZipTests: XCTestCase {
         let failDestinationPath = try autoRemovingSandbox()
         XCTAssertThrowsError(try Zip.unzipFile(zipFilePath, destination: failDestinationPath, overwrite: true))
 
+        #if os(Windows)
         // "prod-apple-swift-metrics-main-e6a00d36-finder.zip" is a zip file
         // that was created by unzipping the original zip file with Finder on macOS 14.6.1
         // and then zipping it again using Finder on macOS 14.6.1.
-
-        #if os(Windows)
-        let folder = url(forResource: "prod-apple-swift-metrics-main-e6a00d36")
-        let testZipFilePath = try autoRemovingSandbox().appendingPathComponent("windows-archive.zip")
-        try Zip.zipFiles(paths: [folder], zipFilePath: testZipFilePath)
+        let testZipFilePath = url(forResource: "prod-apple-swift-metrics-main-e6a00d36-finder", withExtension: "zip")!
         #else
         // "prod-apple-swift-metrics-main-e6a00d36-test.zip" is a zip file
         // that was created by unzipping the original zip file with Finder on macOS 14.6.1
