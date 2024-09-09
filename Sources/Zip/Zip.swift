@@ -146,7 +146,7 @@ public class Zip {
             var writeBytes: UInt64 = 0
             #if os(Windows)
             let filePointer: UnsafeMutablePointer<FILE>? = fopen(
-                fullPath.prefix(2) + fullPath.dropFirst(2).replacingOccurrences(of: ":", with: "%3A"),
+                fullPath.prefix(2) + fullPath.dropFirst(2).replacingOccurrences(of: ":", with: "_"),
                 "wb"
             )
             #else
