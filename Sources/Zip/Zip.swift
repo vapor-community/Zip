@@ -173,17 +173,19 @@ public class Zip {
                 // Convert POSIX permissions to Windows attributes
                 var attributes: UInt32 = 0
                 if permissions & 0o400 != 0 { // Owner read
-                    attributes |= FILE_ATTRIBUTE_READONLY
+                    attributes |= UInt32(FILE_ATTRIBUTE_READONLY)
                 }
                 if permissions & 0o200 != 0 { // Owner write
-                    attributes &= ~FILE_ATTRIBUTE_READONLY
+                    attributes &= ~UInt32(FILE_ATTRIBUTE_READONLY)
                 }
                 if permissions & 0o100 != 0 { // Owner execute
                     // Windows does not have a direct equivalent for execute permissions
                     // You might need to handle this separately if required
                 }
+                // Convert fullPath to a wide string
+                let fullPathW = fullPath.withCString(encodedAs: UTF16.self) { $0 }
                 // Set the file attributes on Windows
-                let result = SetFileAttributesW(fullPath, attributes)
+                let result = SetFileAttributesW(fullPathW, attributes)
                 if result == 0 {
                     print("Failed to set permissions to file \(fullPath), error: \(GetLastError())")
                 }
