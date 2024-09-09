@@ -346,10 +346,16 @@ final class ZipTests: XCTestCase {
         // that was created by unzipping the original zip file with Finder on macOS 14.6.1
         // and then zipping it again using Finder on macOS 14.6.1.
 
+        #if os(Windows)
+        let folder = url(forResource: "prod-apple-swift-metrics-main-e6a00d36")
+        let testZipFilePath = try autoRemovingSandbox().appendingPathComponent("windows-archive.zip")
+        try Zip.zipFiles(paths: [folder], zipFilePath: testZipFilePath)
+        #else
         // "prod-apple-swift-metrics-main-e6a00d36-test.zip" is a zip file
         // that was created by unzipping the original zip file with Finder on macOS 14.6.1
         // and then zipping it again using vapor-community/Zip v2.2.0.
         let testZipFilePath = url(forResource: "prod-apple-swift-metrics-main-e6a00d36-test", withExtension: "zip")!
+        #endif
         let destinationPath = try autoRemovingSandbox()
         XCTAssertNoThrow(try Zip.unzipFile(testZipFilePath, destination: destinationPath, overwrite: true))
 

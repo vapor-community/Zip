@@ -101,7 +101,6 @@ public class Zip {
 
             var isDirectory = false
             let fileInfoSizeFileName = Int(fileInfo.size_filename - 1)
-            print("fileName[fileInfoSizeFileName] = \(fileName[fileInfoSizeFileName])")
             if (fileName[fileInfoSizeFileName] == "/".cString(using: String.Encoding.utf8)?.first || fileName[fileInfoSizeFileName] == "\\".cString(using: String.Encoding.utf8)?.first) {
                 isDirectory = true
             }
