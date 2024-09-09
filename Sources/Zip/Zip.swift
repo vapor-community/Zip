@@ -182,11 +182,8 @@ public class Zip {
                     // Windows does not have a direct equivalent for execute permissions
                     // You might need to handle this separately if required
                 }
-                // Convert fullPath to a wide string
-                let fullPathW = fullPath.withCString(encodedAs: UTF16.self) { $0 }
                 // Set the file attributes on Windows
-                let result = SetFileAttributesW(fullPathW, attributes)
-                if result == 0 {
+                if !SetFileAttributesW(fullPath.withCString(encodedAs: UTF16.self) { $0 }, attributes) {
                     print("Failed to set permissions to file \(fullPath), error: \(GetLastError())")
                 }
                 #else
