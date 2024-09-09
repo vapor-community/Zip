@@ -8,6 +8,9 @@
 
 import Foundation
 @_implementationOnly import CMinizip
+#if os(Windows)
+import WinSDK
+#endif
 
 /// Main class that handles zipping and unzipping of files.
 public class Zip {
