@@ -116,7 +116,6 @@ public class Zip {
                 throw ZipError.unzipFail
             }
 
-            let creationDate = Date()
             let directoryAttributes: [FileAttributeKey: Any]?
             #if (os(Linux) || os(Windows)) && swift(<6.0)
                 // On Linux, setting attributes is not yet really implemented.
@@ -124,6 +123,7 @@ public class Zip {
                 // See https://github.com/apple/swift-corelibs-foundation/blob/swift-4.2-branch/Foundation/FileManager.swift#L182-L196
                 directoryAttributes = nil
             #else
+                let creationDate = Date()
                 directoryAttributes = [
                     .creationDate: creationDate,
                     .modificationDate: creationDate
@@ -145,7 +145,14 @@ public class Zip {
 
             var writeBytes: UInt64 = 0
             #if os(Windows)
-            let filePointer: UnsafeMutablePointer<FILE>? = fopen(fullPath.replacingOccurrences(of: ":", with: "%3A"), "wb")
+            func sanitizeFileName(_ fileName: String) -> String {
+                if fileName.count > 2 && fileName[1] == ":" {
+                    return fileName.prefix(2) + fileName.dropFirst(2).replacingOccurrences(of: ":", with: "%3A")
+                } else {
+                    return fileName.replacingOccurrences(of: ":", with: "%3A")
+                }
+            }
+            let filePointer: UnsafeMutablePointer<FILE>? = fopen(sanitizeFileName(fullPath), "wb")
             #else
             let filePointer: UnsafeMutablePointer<FILE>? = fopen(fullPath, "wb")
             #endif
