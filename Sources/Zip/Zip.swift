@@ -183,7 +183,7 @@ public class Zip {
                     // You might need to handle this separately if required
                 }
                 // Set the file attributes on Windows
-                if !SetFileAttributesW(fullPath.withCString(encodedAs: UTF16.self) { $0 }, attributes) {
+                if !SetFileAttributesW(fullPath.utf16.map { WCHAR($0) } + [0], attributes) {
                     print("Failed to set permissions to file \(fullPath), error: \(GetLastError())")
                 }
                 #else
