@@ -55,8 +55,6 @@ extension Zip {
         compression: ZipCompression = .DefaultCompression,
         progress: ((_ progress: Double) -> ())? = nil
     ) throws {
-        let destinationPath = zipFilePath.path
-
         // Progress handler set up
         var currentPosition: Int = 0
         var totalSize: Int = 0
@@ -71,20 +69,14 @@ extension Zip {
         progressTracker.kind = ProgressKind.file
 
         // Begin Zipping
-        let zip = zipOpen(destinationPath, APPEND_STATUS_CREATE)
+        let zip = zipOpen(zipFilePath.path, APPEND_STATUS_CREATE)
 
         for archiveFile in archiveFiles {
             // Skip empty data
-            if archiveFile.data.isEmpty {
-                continue
-            }
+            if archiveFile.data.isEmpty { continue }
 
             // Setup the zip file info
-            var zipInfo = zip_fileinfo(
-                dos_date: 0,
-                internal_fa: 0,
-                external_fa: 0
-            )
+            var zipInfo = zip_fileinfo(dos_date: 0, internal_fa: 0, external_fa: 0)
 
             if let modifiedTime = archiveFile.modifiedTime {
                 zipInfo.dos_date = modifiedTime.dosDate
@@ -94,15 +86,8 @@ extension Zip {
             zipOpenNewFileInZip3(
                 zip, archiveFile.filename, &zipInfo,
                 nil, 0, nil, 0,
-                nil,
-                UInt16(Z_DEFLATED),
-                compression.minizipCompression,
-                0,
-                -MAX_WBITS,
-                DEF_MEM_LEVEL,
-                Z_DEFAULT_STRATEGY,
-                password,
-                0
+                nil, UInt16(Z_DEFLATED), compression.minizipCompression, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY,
+                password, 0
             )
             let _ = archiveFile.data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                 zipWriteInFileInZip(zip, bytes.baseAddress, UInt32(archiveFile.data.count))
@@ -111,11 +96,9 @@ extension Zip {
 
             // Update progress handler
             currentPosition += archiveFile.data.count
-
             if let progressHandler = progress {
                 progressHandler((Double(currentPosition/totalSize)))
             }
-
             progressTracker.completedUnitCount = Int64(currentPosition)
         }
 
@@ -125,7 +108,6 @@ extension Zip {
         if let progressHandler = progress {
             progressHandler(1.0)
         }
-
         progressTracker.completedUnitCount = Int64(totalSize)
     }
 }
