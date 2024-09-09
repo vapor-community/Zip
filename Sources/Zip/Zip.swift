@@ -158,6 +158,7 @@ public class Zip {
             if unzCloseCurrentFile(zip) == UNZ_CRCERROR {
                 throw ZipError.unzipFail
             }
+            print("File: \(fullPath)")
             print("writeBytes: \(writeBytes)")
             print("fileInfo.uncompressed_size: \(fileInfo.uncompressed_size)")
             guard writeBytes == fileInfo.uncompressed_size else {
