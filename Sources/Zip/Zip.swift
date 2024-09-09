@@ -145,8 +145,14 @@ public class Zip {
 
             var writeBytes: UInt64 = 0
             let filePointer: UnsafeMutablePointer<FILE>? = fopen(fullPath, "wb")
+            if filePointer == nil {
+                print("XXXXXXXX - filePointer is nil")
+            }
             while let filePointer {
                 let readBytes = unzReadCurrentFile(zip, &buffer, bufferSize)
+                if readBytes < 0 {
+                    print("XXXXXXXXXXXX - Failed to read from \(fullPath), error code: \(readBytes)")
+                }
                 guard readBytes > 0 else { break }
                 guard fwrite(buffer, Int(readBytes), 1, filePointer) == 1 else {
                     throw ZipError.unzipFail
