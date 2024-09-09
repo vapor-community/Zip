@@ -159,18 +159,32 @@ public class Zip {
                 throw ZipError.unzipFail
             }
             guard writeBytes == fileInfo.uncompressed_size else {
-                // WINDOWS FAILS HERE
-                print("XXXXXXXXXXXXXXXXXXXXXXXX - 8")
                 throw ZipError.unzipFail
             }
 
             // Set file permissions from current `fileInfo`
             if fileInfo.external_fa != 0 {
+                let permissions = (fileInfo.external_fa >> 16) & 0x1FF
                 // TODO: Set permissions properly on Windows
                 #if os(Windows)
-                try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: fullPath)
+                // Convert POSIX permissions to Windows attributes
+                var attributes: UInt32 = 0
+                if permissions & 0o400 != 0 { // Owner read
+                    attributes |= FILE_ATTRIBUTE_READONLY
+                }
+                if permissions & 0o200 != 0 { // Owner write
+                    attributes &= ~FILE_ATTRIBUTE_READONLY
+                }
+                if permissions & 0o100 != 0 { // Owner execute
+                    // Windows does not have a direct equivalent for execute permissions
+                    // You might need to handle this separately if required
+                }
+                // Set the file attributes on Windows
+                let result = SetFileAttributesW(fullPath, attributes)
+                if result == 0 {
+                    print("Failed to set permissions to file \(fullPath), error: \(GetLastError())")
+                }
                 #else
-                let permissions = (fileInfo.external_fa >> 16) & 0x1FF
                 // We will define a valid permission range between Owner read only to full access
                 if permissions >= 0o400 && permissions <= 0o777 {
                     do {
