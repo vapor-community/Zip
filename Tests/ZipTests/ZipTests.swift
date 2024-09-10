@@ -350,12 +350,9 @@ final class ZipTests: XCTestCase {
         let destinationPath = try autoRemovingSandbox()
 
         XCTAssertNoThrow(try Zip.unzipFile(filePath, destination: destinationPath, password: "password", fileOutputHandler: { fileURL in
-            print("File: \(fileURL)")
             XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
         }))
 
-        print(destinationPath.appendingPathComponent("3crBXeO.gif"))
-        print(destinationPath.appendingPathComponent("kYkLkPf.gif"))
         XCTAssertTrue(FileManager.default.fileExists(atPath: destinationPath.path))
         try XCTAssertGreaterThan(Data(contentsOf: destinationPath.appendingPathComponent("3crBXeO.gif")).count, 0)
         try XCTAssertGreaterThan(Data(contentsOf: destinationPath.appendingPathComponent("kYkLkPf.gif")).count, 0)

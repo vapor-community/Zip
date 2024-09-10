@@ -188,9 +188,15 @@ public class Zip {
             }
             
             if let fileHandler = fileOutputHandler,
-                let encodedString = fullPath.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                let fileUrl = URL(string: encodedString) {
-                fileHandler(fileUrl)
+                let encodedString = fullPath.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                #if os(Windows)
+                let fileUrlString = "file:///\(encodedString)"
+                #else
+                let fileUrlString = encodedString
+                #endif
+                if let fileUrl = URL(string: fileUrlString) {
+                    fileHandler(fileUrl)
+                }
             }
             
             progressTracker.completedUnitCount = Int64(currentPosition)
