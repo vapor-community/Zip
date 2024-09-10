@@ -307,7 +307,7 @@ public class Zip {
                 if let progressHandler = progress, currentPosition / totalSize != 1 {
                     progressHandler(currentPosition / totalSize)
                 }
-                
+
                 progressTracker.completedUnitCount = Int64(currentPosition)
                 
                 zipCloseFileInZip(zip)
@@ -320,7 +320,7 @@ public class Zip {
         if let progressHandler = progress{
             progressHandler(1.0)
         }
-
+        
         progressTracker.completedUnitCount = Int64(totalSize)
     }
     

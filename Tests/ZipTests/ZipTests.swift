@@ -366,7 +366,7 @@ final class ZipTests: XCTestCase {
         // "prod-apple-swift-metrics-main-e6a00d36-finder.zip" is a zip file
         // that was created by unzipping the original zip file with Finder on macOS 14.6.1
         // and then zipping it again using Finder on macOS 14.6.1.
-        
+
         // "prod-apple-swift-metrics-main-e6a00d36-test.zip" is a zip file
         // that was created by unzipping the original zip file with Finder on macOS 14.6.1
         // and then zipping it again using vapor-community/Zip v2.2.0.

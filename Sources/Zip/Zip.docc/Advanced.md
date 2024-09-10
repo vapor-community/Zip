@@ -15,7 +15,7 @@ import Zip
 do {
   let filePath = Bundle.main.url(forResource: "file", withExtension: "zip")!
   let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-  try Zip.unzipFile(filePath, destination: documentsDirectory, overwrite: true, password: "password") { progress in
+  try Zip.unzipFile(filePath, destination: documentsDirectory, password: "password") { progress in
     print(progress)
   }
 
