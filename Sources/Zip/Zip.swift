@@ -8,9 +8,6 @@
 
 import Foundation
 @_implementationOnly import CMinizip
-#if os(Windows)
-import WinSDK
-#endif
 
 /// Main class that handles zipping and unzipping of files.
 public class Zip {
@@ -165,28 +162,11 @@ public class Zip {
                 throw ZipError.unzipFail
             }
 
+            // TODO: Set permissions properly on Windows
+            #if !os(Windows)
             // Set file permissions from current `fileInfo`
             if fileInfo.external_fa != 0 {
                 let permissions = (fileInfo.external_fa >> 16) & 0x1FF
-                // TODO: Set permissions properly on Windows
-                #if os(Windows)
-                // Convert POSIX permissions to Windows attributes
-                var attributes: UInt32 = 0
-                if permissions & 0o400 != 0 { // Owner read
-                    attributes |= UInt32(FILE_ATTRIBUTE_READONLY)
-                }
-                if permissions & 0o200 != 0 { // Owner write
-                    attributes &= ~UInt32(FILE_ATTRIBUTE_READONLY)
-                }
-                if permissions & 0o100 != 0 { // Owner execute
-                    // Windows does not have a direct equivalent for execute permissions
-                    // You might need to handle this separately if required
-                }
-                // Set the file attributes on Windows
-                if !SetFileAttributesW(fullPath.utf16.map { WCHAR($0) } + [0], attributes) {
-                    print("Failed to set permissions to file \(fullPath), error: \(GetLastError())")
-                }
-                #else
                 // We will define a valid permission range between Owner read only to full access
                 if permissions >= 0o400 && permissions <= 0o777 {
                     do {
@@ -195,8 +175,8 @@ public class Zip {
                         print("Failed to set permissions to file \(fullPath), error: \(error)")
                     }
                 }
-                #endif
             }
+            #endif
 
             ret = unzGoToNextFile(zip)
             

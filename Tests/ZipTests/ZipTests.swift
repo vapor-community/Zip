@@ -335,7 +335,6 @@ final class ZipTests: XCTestCase {
     }
 
     // Tests if https://github.com/vapor-community/Zip/issues/4 does not occur anymore.
-    // TODO: Fix on Windows
     func testRoundTripping() throws {
         // "prod-apple-swift-metrics-main-e6a00d36.zip" is the original zip file from the issue.
         let zipFilePath = url(forResource: "prod-apple-swift-metrics-main-e6a00d36", withExtension: "zip")!
