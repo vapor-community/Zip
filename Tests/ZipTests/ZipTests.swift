@@ -346,22 +346,18 @@ final class ZipTests: XCTestCase {
     }
 
     func testFileHandler() throws {
-        let imageURL1 = url(forResource: "3crBXeO", withExtension: "gif")!
-        let imageURL2 = url(forResource: "kYkLkPf", withExtension: "gif")!
-        let zipFilePath = try autoRemovingSandbox().appendingPathComponent("archive.zip")
-        try Zip.zipFiles(paths: [imageURL1, imageURL2], zipFilePath: zipFilePath, password: "password")
-        XCTAssertTrue(FileManager.default.fileExists(atPath: zipFilePath.path))
-        let directoryName = zipFilePath.lastPathComponent.replacingOccurrences(of: ".\(zipFilePath.pathExtension)", with: "")
-        let destinationUrl = try autoRemovingSandbox().appendingPathComponent(directoryName, isDirectory: true)
+        let filePath = url(forResource: "bb8", withExtension: "zip")!
+        let destinationPath = try autoRemovingSandbox()
 
-        XCTAssertNoThrow(try Zip.unzipFile(zipFilePath, destination: destinationUrl, password: "password", fileOutputHandler: { fileURL in
-            print("File: \(fileURL)")
-            XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
+        var files: [URL] = []
+        XCTAssertNoThrow(try Zip.unzipFile(filePath, destination: destinationPath, password: "password", fileOutputHandler: { fileURL in
+            files.append(fileURL)
         }))
-
-        XCTAssertTrue(FileManager.default.fileExists(atPath: destinationUrl.path))
-        try XCTAssertGreaterThan(Data(contentsOf: destinationUrl.appendingPathComponent("3crBXeO.gif")).count, 0)
-        try XCTAssertGreaterThan(Data(contentsOf: destinationUrl.appendingPathComponent("kYkLkPf.gif")).count, 0)
+        XCTAssertEqual(files.count, 9)
+        for file in files { XCTAssert(FileManager.default.fileExists(atPath: file.path)) }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: destinationPath.path))
+        try XCTAssertGreaterThan(Data(contentsOf: destinationPath.appendingPathComponent("3crBXeO.gif")).count, 0)
+        try XCTAssertGreaterThan(Data(contentsOf: destinationPath.appendingPathComponent("kYkLkPf.gif")).count, 0)
     }
 
     // Tests if https://github.com/vapor-community/Zip/issues/4 does not occur anymore.
