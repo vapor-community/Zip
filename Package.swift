@@ -1,6 +1,10 @@
 // swift-tools-version:5.8
 import PackageDescription
+#if swift(>=6.0)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 let package = Package(
     name: "Zip",

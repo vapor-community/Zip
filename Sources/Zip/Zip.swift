@@ -6,7 +6,11 @@
 //  Copyright © 2015 Roy Marmelstein. All rights reserved.
 //
 
+#if swift(>=6.0)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 @_implementationOnly import CMinizip
 
 /// Main class that handles zipping and unzipping of files.
