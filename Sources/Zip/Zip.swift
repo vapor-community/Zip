@@ -95,6 +95,11 @@ public class Zip {
             fileName[Int(fileInfo.size_filename)] = 0
 
             var pathString = String(cString: fileName)
+
+            #if os(Windows)
+            pathString = pathString.replacingOccurrences(of: ":", with: "_")
+            #endif
+
             guard !pathString.isEmpty else {
                 throw ZipError.unzipFail
             }
@@ -110,7 +115,7 @@ public class Zip {
             }
 
             let fullPath = destination.appendingPathComponent(pathString).standardizedFileURL.path
-            // `.standardized` removes any `..` to move a level up.
+            // `.standardizedFileURL` removes any `..` to move a level up.
             // If we then check that the `fullPath` starts with the destination directory we know we are not extracting "outside" the destination.
             guard fullPath.starts(with: destination.standardizedFileURL.path) else {
                 throw ZipError.unzipFail
@@ -162,8 +167,6 @@ public class Zip {
                 throw ZipError.unzipFail
             }
 
-            // TODO: Set permissions properly on Windows
-            #if !os(Windows)
             // Set file permissions from current `fileInfo`
             if fileInfo.external_fa != 0 {
                 let permissions = (fileInfo.external_fa >> 16) & 0x1FF
@@ -176,7 +179,6 @@ public class Zip {
                     }
                 }
             }
-            #endif
 
             ret = unzGoToNextFile(zip)
             
