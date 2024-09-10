@@ -110,7 +110,6 @@ public class Zip {
             if (fileName[fileInfoSizeFileName] == "/".cString(using: String.Encoding.utf8)?.first || fileName[fileInfoSizeFileName] == "\\".cString(using: String.Encoding.utf8)?.first) {
                 isDirectory = true
             }
-            
             if pathString.rangeOfCharacter(from: CharacterSet(charactersIn: "/\\")) != nil {
                 pathString = pathString.replacingOccurrences(of: "\\", with: "/")
             }
@@ -157,6 +156,7 @@ public class Zip {
                 }
                 writeBytes += UInt64(readBytes)
             }
+
             if let filePointer { fclose(filePointer) }
 
             if unzCloseCurrentFile(zip) == UNZ_CRCERROR {
