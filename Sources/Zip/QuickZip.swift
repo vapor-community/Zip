@@ -79,7 +79,9 @@ extension Zip {
      */
     public class func quickZipFiles(_ paths: [URL], fileName: String, progress: ((_ progress: Double) -> ())?) throws -> URL {
         var fileNameWithExtension = fileName
-        if !fileName.hasSuffix(".zip") { fileNameWithExtension += ".zip" }
+        if !fileName.hasSuffix(".zip") {
+            fileNameWithExtension += ".zip"
+        }
         let destinationUrl = FileManager.default.temporaryDirectory.appendingPathComponent(fileNameWithExtension)
         try self.zipFiles(paths: paths, zipFilePath: destinationUrl, progress: progress)
         return destinationUrl

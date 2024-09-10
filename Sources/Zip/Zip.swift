@@ -97,6 +97,7 @@ public class Zip {
             var pathString = String(cString: fileName)
 
             #if os(Windows)
+            // Colons are not allowed in Windows file names.
             pathString = pathString.replacingOccurrences(of: ":", with: "_")
             #endif
 
@@ -123,9 +124,7 @@ public class Zip {
 
             let directoryAttributes: [FileAttributeKey: Any]?
             #if (os(Linux) || os(Windows)) && swift(<6.0)
-                // On Linux, setting attributes is not yet really implemented.
-                // In Swift 4.2, the only settable attribute is `.posixPermissions`.
-                // See https://github.com/apple/swift-corelibs-foundation/blob/swift-4.2-branch/Foundation/FileManager.swift#L182-L196
+                // On Linux and Windows, setting attributes is not yet really implemented.
                 directoryAttributes = nil
             #else
                 let creationDate = Date()
@@ -206,6 +205,7 @@ public class Zip {
         if let progressHandler = progress {
             progressHandler(1.0)
         }
+
         progressTracker.completedUnitCount = Int64(totalSize)
     }
     
@@ -307,6 +307,7 @@ public class Zip {
                 if let progressHandler = progress, currentPosition / totalSize != 1 {
                     progressHandler(currentPosition / totalSize)
                 }
+                
                 progressTracker.completedUnitCount = Int64(currentPosition)
                 
                 zipCloseFileInZip(zip)
@@ -319,6 +320,7 @@ public class Zip {
         if let progressHandler = progress{
             progressHandler(1.0)
         }
+
         progressTracker.completedUnitCount = Int64(totalSize)
     }
     

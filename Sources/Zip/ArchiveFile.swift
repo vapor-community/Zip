@@ -73,7 +73,9 @@ extension Zip {
 
         for archiveFile in archiveFiles {
             // Skip empty data
-            if archiveFile.data.isEmpty { continue }
+            if archiveFile.data.isEmpty {
+                continue
+            }
 
             // Setup the zip file info
             var zipInfo = zip_fileinfo(dos_date: 0, internal_fa: 0, external_fa: 0)
@@ -96,9 +98,11 @@ extension Zip {
 
             // Update progress handler
             currentPosition += archiveFile.data.count
+            
             if let progressHandler = progress {
                 progressHandler((Double(currentPosition/totalSize)))
             }
+
             progressTracker.completedUnitCount = Int64(currentPosition)
         }
 
@@ -108,6 +112,7 @@ extension Zip {
         if let progressHandler = progress {
             progressHandler(1.0)
         }
+
         progressTracker.completedUnitCount = Int64(totalSize)
     }
 }

@@ -17,10 +17,14 @@
 </div>
 <br>
 
-A framework for zipping and unzipping files in Swift.
+📂 A framework for zipping and unzipping files in Swift.
 
 Simple and quick to use.
 Built on top of [Minizip 1.2](https://github.com/zlib-ng/minizip-ng/tree/1.2).
+
+## Overview
+
+### Getting Started
 
 Use the SPM string to easily include the dependendency in your `Package.swift` file.
 
@@ -28,7 +32,11 @@ Use the SPM string to easily include the dependendency in your `Package.swift` f
 .package(url: "https://github.com/vapor-community/Zip.git", from: "2.2.0")
 ```
 
-## Usage
+and add it to your target's dependencies:
+
+```swift
+.product(name: "Zip", package: "zip")
+```
 
 ### Quick Functions
 
@@ -56,7 +64,7 @@ import Zip
 do {
   let filePath = Bundle.main.url(forResource: "file", withExtension: "zip")!
   let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-  try Zip.unzipFile(filePath, destination: documentsDirectory, overwrite: true, password: "password") { progress in
+  try Zip.unzipFile(filePath, destination: documentsDirectory, password: "password") { progress in
     print(progress)
   }
 
