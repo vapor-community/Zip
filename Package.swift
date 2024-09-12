@@ -8,8 +8,14 @@ import Foundation
 
 let package = Package(
     name: "Zip",
+    platforms: [
+        .macOS(.v11),
+    ],
     products: [
         .library(name: "Zip", targets: ["Zip"])
+    ],
+    dependencies: [
+        .package(url: "https://github.com/apple/swift-system.git", from: "1.3.2")
     ],
     targets: [
         .target(
@@ -23,6 +29,7 @@ let package = Package(
             name: "Zip",
             dependencies: [
                 .target(name: "CMinizip"),
+                .product(name: "SystemPackage", package: "swift-system")
             ],
             cSettings: [
                 .define("_CRT_SECURE_NO_WARNINGS", .when(platforms: [.windows])),

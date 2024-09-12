@@ -11,6 +11,7 @@ import FoundationEssentials
 #else
 import Foundation
 #endif
+import SystemPackage
 @_implementationOnly import CMinizip
 
 /// Main class that handles zipping and unzipping of files.
@@ -84,7 +85,6 @@ public class Zip {
                 throw ZipError.unzipFail
             }
             var fileInfo = unz_file_info64()
-            memset(&fileInfo, 0, MemoryLayout<unz_file_info>.size)
             ret = unzGetCurrentFileInfo64(zip, &fileInfo, nil, 0, nil, 0, nil, 0)
             if ret != UNZ_OK {
                 unzCloseCurrentFile(zip)
@@ -100,20 +100,19 @@ public class Zip {
 
             var pathString = String(cString: fileName)
 
+            /*
             #if os(Windows)
             // Colons are not allowed in Windows file names.
             pathString = pathString.replacingOccurrences(of: ":", with: "_")
             #endif
+            */
 
             guard !pathString.isEmpty else {
                 throw ZipError.unzipFail
             }
 
-            var isDirectory = false
             let fileInfoSizeFileName = Int(fileInfo.size_filename - 1)
-            if (fileName[fileInfoSizeFileName] == "/".cString(using: String.Encoding.utf8)?.first || fileName[fileInfoSizeFileName] == "\\".cString(using: String.Encoding.utf8)?.first) {
-                isDirectory = true
-            }
+            let isDirectory = fileName[fileInfoSizeFileName] == "/".cString(using: String.Encoding.utf8)?.first || fileName[fileInfoSizeFileName] == "\\".cString(using: String.Encoding.utf8)?.first
             if pathString.rangeOfCharacter(from: CharacterSet(charactersIn: "/\\")) != nil {
                 pathString = pathString.replacingOccurrences(of: "\\", with: "/")
             }
@@ -150,19 +149,26 @@ public class Zip {
                 ret = unzGoToNextFile(zip)
             }
 
-            var writeBytes: UInt64 = 0
-            let filePointer: UnsafeMutablePointer<FILE>? = fopen(fullPath, "wb")
-            while let filePointer {
-                let readBytes = unzReadCurrentFile(zip, &buffer, bufferSize)
-                guard readBytes > 0 else { break }
-                guard fwrite(buffer, Int(readBytes), 1, filePointer) == 1 else {
-                    throw ZipError.unzipFail
+            var writeBytes: Int = 0
+            do {
+                let fd = try FileDescriptor.open(
+                    fullPath, .writeOnly,
+                    options: [.append, .create],
+                    permissions: .ownerReadWrite
+                )
+                try fd.closeAfter {
+                    while true {
+                        let readBytes = unzReadCurrentFile(zip, &buffer, bufferSize)
+                        guard readBytes > 0 else { break }
+                        writeBytes += try fd.writeAll(buffer[..<Int(readBytes)])
+                    }
                 }
-                writeBytes += UInt64(readBytes)
+            } catch let error as Errno where error == .isDirectory {
+                // Skip files that are directories
+            } catch {
+                // If they are not directories, re-throw any other error
+                throw error 
             }
-
-            if let filePointer { fclose(filePointer) }
-
             if unzCloseCurrentFile(zip) == UNZ_CRCERROR {
                 throw ZipError.unzipFail
             }
@@ -191,15 +197,9 @@ public class Zip {
             }
             
             if let fileHandler = fileOutputHandler,
-                let encodedString = fullPath.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
-                #if os(Windows)
-                let fileUrlString = "file:///\(encodedString)"
-                #else
-                let fileUrlString = encodedString
-                #endif
-                if let fileUrl = URL(string: fileUrlString) {
+                let encodedString = fullPath.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+                let fileUrl = URL(string: FilePath(encodedString).string) {
                     fileHandler(fileUrl)
-                }
             }
             
             progressTracker.completedUnitCount = Int64(currentPosition)
