@@ -14,9 +14,6 @@ let package = Package(
     products: [
         .library(name: "Zip", targets: ["Zip"])
     ],
-    dependencies: [
-        .package(url: "https://github.com/apple/swift-system.git", from: "1.3.2")
-    ],
     targets: [
         .target(
             name: "CMinizip",
@@ -29,7 +26,6 @@ let package = Package(
             name: "Zip",
             dependencies: [
                 .target(name: "CMinizip"),
-                .product(name: "SystemPackage", package: "swift-system")
             ],
             cSettings: [
                 .define("_CRT_SECURE_NO_WARNINGS", .when(platforms: [.windows])),

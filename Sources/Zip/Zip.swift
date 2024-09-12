@@ -11,7 +11,6 @@ import FoundationEssentials
 #else
 import Foundation
 #endif
-import SystemPackage
 @_implementationOnly import CMinizip
 
 /// Main class that handles zipping and unzipping of files.
@@ -100,12 +99,10 @@ public class Zip {
 
             var pathString = String(cString: fileName)
 
-            /*
             #if os(Windows)
             // Colons are not allowed in Windows file names.
             pathString = pathString.replacingOccurrences(of: ":", with: "_")
             #endif
-            */
 
             guard !pathString.isEmpty else {
                 throw ZipError.unzipFail
@@ -149,26 +146,19 @@ public class Zip {
                 ret = unzGoToNextFile(zip)
             }
 
-            var writeBytes: Int = 0
-            do {
-                let fd = try FileDescriptor.open(
-                    fullPath, .writeOnly,
-                    options: [.append, .create],
-                    permissions: .ownerReadWrite
-                )
-                try fd.closeAfter {
-                    while true {
-                        let readBytes = unzReadCurrentFile(zip, &buffer, bufferSize)
-                        guard readBytes > 0 else { break }
-                        writeBytes += try fd.writeAll(buffer[..<Int(readBytes)])
-                    }
+            var writeBytes: UInt64 = 0
+            let filePointer: UnsafeMutablePointer<FILE>? = fopen(fullPath, "wb")
+            while let filePointer {
+                let readBytes = unzReadCurrentFile(zip, &buffer, bufferSize)
+                guard readBytes > 0 else { break }
+                guard fwrite(buffer, Int(readBytes), 1, filePointer) == 1 else {
+                    throw ZipError.unzipFail
                 }
-            } catch let error as Errno where error == .isDirectory {
-                // Skip files that are directories
-            } catch {
-                // If they are not directories, re-throw any other error
-                throw error 
+                writeBytes += UInt64(readBytes)
             }
+
+            if let filePointer { fclose(filePointer) }
+
             if unzCloseCurrentFile(zip) == UNZ_CRCERROR {
                 throw ZipError.unzipFail
             }
@@ -197,9 +187,15 @@ public class Zip {
             }
             
             if let fileHandler = fileOutputHandler,
-                let encodedString = fullPath.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                let fileUrl = URL(string: FilePath(encodedString).string) {
+                let encodedString = fullPath.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                #if os(Windows)
+                let fileUrlString = "file:///\(encodedString)"
+                #else
+                let fileUrlString = encodedString
+                #endif
+                if let fileUrl = URL(string: fileUrlString) {
                     fileHandler(fileUrl)
+                }
             }
             
             progressTracker.completedUnitCount = Int64(currentPosition)
