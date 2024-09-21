@@ -1,4 +1,8 @@
+#if swift(>=6.0)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 @_implementationOnly import CMinizip
 
 /// Defines data saved in memory that will be archived as a file.

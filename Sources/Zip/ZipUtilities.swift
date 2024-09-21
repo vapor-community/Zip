@@ -6,7 +6,11 @@
 //  Copyright © 2016 Roy Marmelstein. All rights reserved.
 //
 
+#if swift(>=6.0)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 internal class ZipUtilities {
     /*

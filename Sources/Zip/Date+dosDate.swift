@@ -1,4 +1,8 @@
+#if swift(>=6.0)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 extension Date {
     var dosDate: UInt32 {

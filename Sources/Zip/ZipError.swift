@@ -1,4 +1,8 @@
+#if swift(>=6.0)
+import FoundationEssentials
+#else
 import Foundation
+#endif
 
 /// Errors that can be thrown by Zip.
 public enum ZipError: Error {
