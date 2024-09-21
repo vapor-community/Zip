@@ -71,8 +71,10 @@ public class Zip {
         // Begin unzipping
         let zip = unzOpen64(path)
         defer { unzClose(zip) }
-        if unzGoToFirstFile(zip) != UNZ_OK {
+        let err = unzGoToFirstFile(zip)
+        if err != UNZ_OK {
             print("XXXXXXXXXXXXX - 1")
+            print(err)
             throw ZipError.unzipFail
         }
         repeat {
@@ -82,14 +84,12 @@ public class Zip {
                 ret = unzOpenCurrentFile(zip)
             }
             if ret != UNZ_OK {
-                print("XXXXXXXXXXXXX - 2")
                 throw ZipError.unzipFail
             }
             var fileInfo = unz_file_info64()
             ret = unzGetCurrentFileInfo64(zip, &fileInfo, nil, 0, nil, 0, nil, 0)
             if ret != UNZ_OK {
                 unzCloseCurrentFile(zip)
-                print("XXXXXXXXXXXXX - 3")
                 throw ZipError.unzipFail
             }
             currentPosition += Double(fileInfo.compressed_size)
@@ -108,7 +108,6 @@ public class Zip {
             #endif
 
             guard !pathString.isEmpty else {
-                print("XXXXXXXXXXXXX - 4")
                 throw ZipError.unzipFail
             }
 
@@ -122,7 +121,6 @@ public class Zip {
             // `.standardizedFileURL` removes any `..` to move a level up.
             // If we then check that the `fullPath` starts with the destination directory we know we are not extracting "outside" the destination.
             guard fullPath.starts(with: destination.standardizedFileURL.path) else {
-                print("XXXXXXXXXXXXX - 5")
                 throw ZipError.unzipFail
             }
 
@@ -157,7 +155,6 @@ public class Zip {
                 let readBytes = unzReadCurrentFile(zip, &buffer, bufferSize)
                 guard readBytes > 0 else { break }
                 guard fwrite(buffer, Int(readBytes), 1, filePointer) == 1 else {
-                    print("XXXXXXXXXXXXX - 6")
                     throw ZipError.unzipFail
                 }
                 writeBytes += UInt64(readBytes)
@@ -166,11 +163,9 @@ public class Zip {
             if let filePointer { fclose(filePointer) }
 
             if unzCloseCurrentFile(zip) == UNZ_CRCERROR {
-                print("XXXXXXXXXXXXX - 7")
                 throw ZipError.unzipFail
             }
             guard writeBytes == fileInfo.uncompressed_size else {
-                print("XXXXXXXXXXXXX - 8")
                 throw ZipError.unzipFail
             }
 
