@@ -71,10 +71,8 @@ public class Zip {
         // Begin unzipping
         let zip = unzOpen64(path)
         defer { unzClose(zip) }
-        let err = unzGoToFirstFile(zip)
-        if err != UNZ_OK {
+        if unzGoToFirstFile(zip) != UNZ_OK {
             print("XXXXXXXXXXXXX - 1")
-            print(err)
             throw ZipError.unzipFail
         }
         repeat {

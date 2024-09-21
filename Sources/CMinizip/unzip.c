@@ -365,6 +365,8 @@ static unzFile unzOpenInternal(const void *path, zlib_filefunc64_32_def *pzlib_f
     us.filestream = ZOPEN64(us.z_filefunc, path, ZLIB_FILEFUNC_MODE_READ | ZLIB_FILEFUNC_MODE_EXISTING);
 
     if (us.filestream == NULL)
+        puts("us.filestream is NULL");
+    if (us.filestream == NULL)
         return NULL;
 
     us.filestream_with_CD = us.filestream;
@@ -468,6 +470,7 @@ static unzFile unzOpenInternal(const void *path, zlib_filefunc64_32_def *pzlib_f
     if (err != UNZ_OK)
     {
         ZCLOSE64(us.z_filefunc, us.filestream);
+        puts("err != UNZ_OK");
         return NULL;
     }
 
