@@ -82,7 +82,11 @@ extension Zip {
             }
 
             // Setup the zip file info
-            var zipInfo = zip_fileinfo(dos_date: 0, internal_fa: 0, external_fa: 0)
+            var zipInfo = zip_fileinfo(
+                dos_date: 0,
+                internal_fa: 0,
+                external_fa: 0
+            )
 
             if let modifiedTime = archiveFile.modifiedTime {
                 zipInfo.dos_date = modifiedTime.dosDate
@@ -92,8 +96,15 @@ extension Zip {
             zipOpenNewFileInZip3(
                 zip, archiveFile.filename, &zipInfo,
                 nil, 0, nil, 0,
-                nil, UInt16(Z_DEFLATED), compression.minizipCompression, 0, -MAX_WBITS, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY,
-                password, 0
+                nil,
+                UInt16(Z_DEFLATED),
+                compression.minizipCompression,
+                0,
+                -MAX_WBITS,
+                DEF_MEM_LEVEL,
+                Z_DEFAULT_STRATEGY,
+                password,
+                0
             )
             let _ = archiveFile.data.withUnsafeBytes { (bytes: UnsafeRawBufferPointer) in
                 zipWriteInFileInZip(zip, bytes.baseAddress, UInt32(archiveFile.data.count))
