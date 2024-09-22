@@ -132,11 +132,16 @@ public class Zip {
 
             var writeBytes: Int = 0
             do {
+                #if os(Windows)
+                let permissions = FilePermissions(rawValue: 0o700)
+                #else
+                let permissions = FilePermissions(rawValue: 0o644)
+                #endif
                 let fd = try FileDescriptor.open(
                     FilePath(fullPath),
                     .writeOnly,
                     options: [.append, .create],
-                    permissions: FilePermissions(rawValue: 0o644)
+                    permissions: permissions
                 )
                 try fd.closeAfter {
                     while true {
