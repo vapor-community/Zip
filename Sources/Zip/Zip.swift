@@ -249,6 +249,7 @@ public class Zip {
             _ = FileManager.default.fileExists(atPath: filePath, isDirectory: &isDirectory)
             if !isDirectory.boolValue {
                 guard let input = fopen(filePath, "r") else {
+                    print("XXXXXXXXXXXXXXXXX - 1")
                     throw ZipError.zipFail
                 }
                 defer { fclose(input) }
@@ -256,14 +257,12 @@ public class Zip {
                 var zipInfo: zip_fileinfo = zip_fileinfo(dos_date: 0, internal_fa: 0, external_fa: 0)
                 do {
                     let fileAttributes = try FileManager.default.attributesOfItem(atPath: filePath)
-                    if let fileDate = fileAttributes[FileAttributeKey.modificationDate] as? Date {
-                        zipInfo.dos_date = fileDate.dosDate
-                    }
                     if let fileSize = fileAttributes[FileAttributeKey.size] as? Double {
                         currentPosition += fileSize
                     }
                 } catch {}
                 guard let buffer = malloc(chunkSize) else {
+                    print("XXXXXXXXXXXXXXXXX - 2")
                     throw ZipError.zipFail
                 }
                 if let password, let fileName {
@@ -281,6 +280,7 @@ public class Zip {
                         nil, 0
                     )
                 } else {
+                    print("XXXXXXXXXXXXXXXXX - 3")
                     throw ZipError.zipFail
                 }
                 var length: Int = 0
