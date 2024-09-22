@@ -136,7 +136,7 @@ public class Zip {
                     FilePath(fullPath),
                     .writeOnly,
                     options: [.append, .create],
-                    permissions: .ownerReadWrite
+                    permissions: FilePermissions(rawValue: 0o644)
                 )
                 try fd.closeAfter {
                     while true {
