@@ -45,7 +45,7 @@ public class Zip {
         fileOutputHandler: ((_ unzippedFile: URL) -> Void)? = nil
     ) throws {
         // Check whether a zip file exists at path.
-        let path = zipFilePath.path
+        let path = zipFilePath.withUnsafeFileSystemRepresentation { String(cString: $0!) }
         if FileManager.default.fileExists(atPath: path) == false || !isValidFileExtension(zipFilePath.pathExtension) {
             throw ZipError.fileNotFound
         }
