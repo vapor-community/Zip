@@ -6,7 +6,7 @@
 //  Copyright © 2015 Roy Marmelstein. All rights reserved.
 //
 
-#if canImport(Darwin) || swift(<6.0)
+#if canImport(Darwin) || compiler(<6.0)
 import Foundation
 #else
 import FoundationEssentials
@@ -178,9 +178,15 @@ public class Zip {
             }
             
             if let fileHandler = fileOutputHandler,
-                let encodedString = fullPath.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-                let fileUrl = URL(string: encodedString) {
-                fileHandler(fileUrl)
+                let encodedString = fullPath.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                #if os(Windows)
+                let fileUrlString = "file:///\(encodedString)"
+                #else
+                let fileUrlString = encodedString
+                #endif
+                if let fileUrl = URL(string: fileUrlString) {
+                    fileHandler(fileUrl)
+                }
             }
             
             progressTracker.completedUnitCount = Int64(currentPosition)

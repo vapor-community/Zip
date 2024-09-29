@@ -178,9 +178,9 @@ final class ZipTests: XCTestCase {
         let unzipDestination = try Zip.quickUnzipFile(permissionsURL)
         let permission644 = unzipDestination.appendingPathComponent("unsupported_permission").appendingPathExtension("txt")
         let foundPermissions = try FileManager.default.attributesOfItem(atPath: permission644.path)[.posixPermissions] as? Int
-        #if os(Windows) && swift(<6.0)
+        #if os(Windows) && compiler(<6.0)
         let expectedPermissions = 0o700
-        #elseif os(Windows) && swift(>=6.0)
+        #elseif os(Windows) && compiler(>=6.0)
         let expectedPermissions = 0o600
         #else
         let expectedPermissions = 0o644
@@ -207,11 +207,11 @@ final class ZipTests: XCTestCase {
         let attributes777 = try fileManager.attributesOfItem(atPath: permission777.path)
         let attributes600 = try fileManager.attributesOfItem(atPath: permission600.path)
         let attributes604 = try fileManager.attributesOfItem(atPath: permission604.path)
-        #if os(Windows) && swift(<6.0)
+        #if os(Windows) && compiler(<6.0)
         XCTAssertEqual(attributes777[.posixPermissions] as? Int, 0o700)
         XCTAssertEqual(attributes600[.posixPermissions] as? Int, 0o700)
         XCTAssertEqual(attributes604[.posixPermissions] as? Int, 0o700)
-        #elseif os(Windows) && swift(>=6.0)
+        #elseif os(Windows) && compiler(>=6.0)
         XCTAssertEqual(attributes777[.posixPermissions] as? Int, 0o600)
         XCTAssertEqual(attributes600[.posixPermissions] as? Int, 0o600)
         XCTAssertEqual(attributes604[.posixPermissions] as? Int, 0o600)

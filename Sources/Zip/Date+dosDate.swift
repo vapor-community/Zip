@@ -1,4 +1,4 @@
-#if canImport(Darwin) || swift(<6.0)
+#if canImport(Darwin) || compiler(<6.0)
 import Foundation
 #else
 import FoundationEssentials
