@@ -116,7 +116,7 @@ public class Zip {
             let fullPath = destination.appendingPathComponent(pathString).standardizedFileURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }
             // `.standardizedFileURL` removes any `..` to move a level up.
             // If we then check that the `fullPath` starts with the destination directory we know we are not extracting "outside" the destination.
-            guard fullPath.starts(with: destination.standardizedFileURL.path) else {
+            guard fullPath.starts(with: destination.standardizedFileURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }) else {
                 print("XXXXXXXXXXX - 5")
                 throw ZipError.unzipFail
             }
