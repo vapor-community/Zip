@@ -6,7 +6,7 @@
 //  Copyright © 2015 Roy Marmelstein. All rights reserved.
 //
 
-#if canImport(Darwin)
+#if canImport(Darwin) || swift(<6.0)
 import Foundation
 #else
 import FoundationEssentials
