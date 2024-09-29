@@ -73,7 +73,7 @@ extension Zip {
         progressTracker.kind = ProgressKind.file
 
         // Begin Zipping
-        let zip = zipOpen(zipFilePath.path, APPEND_STATUS_CREATE)
+        let zip = zipOpen(zipFilePath.withUnsafeFileSystemRepresentation { String(cString: $0!) }, APPEND_STATUS_CREATE)
 
         for archiveFile in archiveFiles {
             // Skip empty data

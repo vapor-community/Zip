@@ -42,7 +42,7 @@ internal class ZipUtilities {
         let fileName: String?
         
         var filePath: String {
-            filePathURL.path
+            filePathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }
         }
     }
     
@@ -59,7 +59,7 @@ internal class ZipUtilities {
         var processedFilePaths = [ProcessedFilePath]()
         for pathURL in paths {
             var isDirectory: ObjCBool = false
-            _ = FileManager.default.fileExists(atPath: pathURL.path, isDirectory: &isDirectory)
+            _ = FileManager.default.fileExists(atPath: pathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }, isDirectory: &isDirectory)
             if !isDirectory.boolValue {
                 let processedPath = ProcessedFilePath(filePathURL: pathURL, fileName: pathURL.lastPathComponent)
                 processedFilePaths.append(processedPath)
@@ -80,11 +80,11 @@ internal class ZipUtilities {
      */
     internal func expandDirectoryFilePath(_ directory: URL) -> [ProcessedFilePath] {
         var processedFilePaths = [ProcessedFilePath]()
-        if let enumerator = FileManager.default.enumerator(atPath: directory.path) {
+        if let enumerator = FileManager.default.enumerator(atPath: directory.withUnsafeFileSystemRepresentation { String(cString: $0!) }) {
             while let filePathComponent = enumerator.nextObject() as? String {
                 let pathURL = directory.appendingPathComponent(filePathComponent)
                 var isDirectory: ObjCBool = false
-                _ = FileManager.default.fileExists(atPath: pathURL.path, isDirectory: &isDirectory)
+                _ = FileManager.default.fileExists(atPath: pathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }, isDirectory: &isDirectory)
                 if !isDirectory.boolValue {
                     var fileName = filePathComponent
                     if includeRootDirectory {

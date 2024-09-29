@@ -245,7 +245,7 @@ public class Zip {
         progressTracker.kind = ProgressKind.file
         
         // Begin Zipping
-        let zip = zipOpen(zipFilePath.path, APPEND_STATUS_CREATE)
+        let zip = zipOpen(zipFilePath.withUnsafeFileSystemRepresentation { String(cString: $0!) }, APPEND_STATUS_CREATE)
         for path in processedPaths {
             let filePath = path.filePath
             var isDirectory: ObjCBool = false
