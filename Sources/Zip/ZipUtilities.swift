@@ -6,11 +6,7 @@
 //  Copyright © 2016 Roy Marmelstein. All rights reserved.
 //
 
-#if canImport(Darwin) || compiler(<6.0)
 import Foundation
-#else
-import FoundationEssentials
-#endif
 
 internal class ZipUtilities {
     /*

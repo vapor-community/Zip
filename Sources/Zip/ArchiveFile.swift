@@ -1,8 +1,4 @@
-#if canImport(Darwin) || compiler(<6.0)
 import Foundation
-#else
-import FoundationEssentials
-#endif
 @_implementationOnly import CMinizip
 
 /// Defines data saved in memory that will be archived as a file.

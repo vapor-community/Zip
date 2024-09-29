@@ -1,8 +1,4 @@
-#if canImport(Darwin) || compiler(<6.0)
 import Foundation
-#else
-import FoundationEssentials
-#endif
 
 /// Errors that can be thrown by Zip.
 public enum ZipError: Error {
