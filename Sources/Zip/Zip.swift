@@ -6,10 +6,10 @@
 //  Copyright © 2015 Roy Marmelstein. All rights reserved.
 //
 
-#if swift(>=6.0)
-import FoundationEssentials
-#else
+#if canImport(Darwin)
 import Foundation
+#else
+import FoundationEssentials
 #endif
 @_implementationOnly import CMinizip
 

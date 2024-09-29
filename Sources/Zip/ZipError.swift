@@ -1,7 +1,7 @@
-#if swift(>=6.0)
-import FoundationEssentials
-#else
+#if canImport(Darwin)
 import Foundation
+#else
+import FoundationEssentials
 #endif
 
 /// Errors that can be thrown by Zip.

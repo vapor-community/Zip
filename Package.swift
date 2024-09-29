@@ -1,9 +1,9 @@
 // swift-tools-version:5.8
 import PackageDescription
-#if swift(>=6.0)
-import FoundationEssentials
-#else
+#if canImport(Darwin)
 import Foundation
+#else
+import FoundationEssentials
 #endif
 
 let package = Package(
