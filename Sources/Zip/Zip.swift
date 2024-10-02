@@ -96,8 +96,9 @@ public class Zip {
             var pathString = String(cString: fileName)
 
             #if os(Windows)
-            // Colons are not allowed in Windows file names.
-            pathString = pathString.replacingOccurrences(of: ":", with: "_")
+            guard pathString.rangeOfCharacter(from: ["<", ">", ":", "\"", "/", "\\", "|", "?", "*",]) == nil else {
+                throw ZipError.unzipFail
+            }
             #endif
 
             guard !pathString.isEmpty else {
