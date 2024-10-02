@@ -363,7 +363,7 @@ final class ZipTests: XCTestCase {
     // Tests if https://github.com/vapor-community/Zip/issues/4 does not occur anymore.
     func testRoundTripping() throws {
         #if os(Windows)
-        XCTExpectFailure("This Zip file contains reserved characters that are not allowed on Windows.")
+        XCTSkip("This Zip file contains reserved characters that are not allowed on Windows.")
         #endif
 
         // "prod-apple-swift-metrics-main-e6a00d36.zip" is the original zip file from the issue.
