@@ -8,9 +8,6 @@ import FoundationEssentials
 
 let package = Package(
     name: "Zip",
-    platforms: [
-        .macOS(.v11),
-    ],
     products: [
         .library(name: "Zip", targets: ["Zip"])
     ],

@@ -118,12 +118,29 @@ public class Zip {
                 throw ZipError.unzipFail
             }
 
+            let creationDate = Date()
+            let directoryAttributes: [FileAttributeKey: Any]?
+            #if (os(Linux) || os(Windows)) && compiler(<6.0)
+                directoryAttributes = nil
+            #else
+                directoryAttributes = [
+                    .creationDate: creationDate,
+                    .modificationDate: creationDate
+                ]
+            #endif
+
             do {
                 if isDirectory {
-                    try FileManager.default.createDirectory(atPath: fullPath, withIntermediateDirectories: true)
+                    try FileManager.default.createDirectory(
+                        atPath: fullPath,
+                        withIntermediateDirectories: true,
+                        attributes: directoryAttributes)
                 } else {
-                    let parentDirectory = (fullPath as NSString).deletingLastPathComponent
-                    try FileManager.default.createDirectory(atPath: parentDirectory, withIntermediateDirectories: true)
+                    try FileManager.default.createDirectory(
+                        atPath: (fullPath as NSString).deletingLastPathComponent,
+                        withIntermediateDirectories: true,
+                        attributes: directoryAttributes
+                    )
                 }
             } catch {}
             if FileManager.default.fileExists(atPath: fullPath) && !isDirectory && !overwrite {
