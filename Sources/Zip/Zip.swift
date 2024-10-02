@@ -96,11 +96,9 @@ public class Zip {
             var pathString = String(cString: fileName)
 
             #if os(Windows)
-            let reservedCharacters: CharacterSet = [
-                // Windows Reserved Characters
-                "<", ">", ":", "\"", "/", "\\", "|", "?", "*",
-            ]
-            pathString = pathString.components(separatedBy: reservedCharacters).joined(separator: "_")
+            guard pathString.rangeOfCharacter(from: ["<", ">", ":", "\"", "|", "?", "*"]) == nil else {
+                throw ZipError.unzipFail
+            }
             #endif
 
             guard !pathString.isEmpty else {
