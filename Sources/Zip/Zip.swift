@@ -148,7 +148,6 @@ public class Zip {
                 throw ZipError.unzipFail
             }
             guard writeBytes == fileInfo.uncompressed_size else {
-                print("XXXXXXXXXXX - 8")
                 throw ZipError.unzipFail
             }
 
