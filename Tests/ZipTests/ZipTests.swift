@@ -404,41 +404,62 @@ final class ZipTests: XCTestCase {
 
     #if os(Windows)
     func testWindowsReservedChars() throws {
-        let file = ArchiveFile(filename: "a_b.txt", data: "Hi Mom!".data(using: .utf8)!)
-        let file1 = ArchiveFile(filename: "a<b.txt", data: "Hello, Zip!".data(using: .utf8)!)
-        let file2 = ArchiveFile(filename: "a>b.txt", data: "Hello, Swift!".data(using: .utf8)!)
-        let file3 = ArchiveFile(filename: "a:b.txt", data: "Hello, World!".data(using: .utf8)!)
-        let file4 = ArchiveFile(filename: "a\"b.txt", data: "Hi Windows!".data(using: .utf8)!)
-        let file5 = ArchiveFile(filename: "a|b.txt", data: "Hi Barbie!".data(using: .utf8)!)
-        let file6 = ArchiveFile(filename: "a?b.txt", data: "Hi, Ken!".data(using: .utf8)!)
-        let file7 = ArchiveFile(filename: "a*b.txt", data: "Hello Everyone!".data(using: .utf8)!)
+        let txtFile = ArchiveFile(filename: "a_b.txt", data: "Hi Mom!".data(using: .utf8)!)
+        let txtFile1 = ArchiveFile(filename: "a<b.txt", data: "Hello, Zip!".data(using: .utf8)!)
+        let txtFile2 = ArchiveFile(filename: "a>b.txt", data: "Hello, Swift!".data(using: .utf8)!)
+        let txtFile3 = ArchiveFile(filename: "a:b.txt", data: "Hello, World!".data(using: .utf8)!)
+        let txtFile4 = ArchiveFile(filename: "a\"b.txt", data: "Hi Windows!".data(using: .utf8)!)
+        let txtFile5 = ArchiveFile(filename: "a|b.txt", data: "Hi Barbie!".data(using: .utf8)!)
+        let txtFile6 = ArchiveFile(filename: "a?b.txt", data: "Hi, Ken!".data(using: .utf8)!)
+        let txtFile7 = ArchiveFile(filename: "a*b.txt", data: "Hello Everyone!".data(using: .utf8)!)
+
+        let file = ArchiveFile(filename: "a_b", data: "Hello, World!".data(using: .utf8)!)
+        let file1 = ArchiveFile(filename: "a<b", data: "Hello, Zip!".data(using: .utf8)!)
+        let file2 = ArchiveFile(filename: "a>b", data: "Hello, Swift!".data(using: .utf8)!)
+        let file3 = ArchiveFile(filename: "a:b", data: "Hello, World!".data(using: .utf8)!)
 
         let sandboxFolder = try autoRemovingSandbox()
         let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
-        try Zip.zipData(archiveFiles: [file, file1, file2, file3, file4, file5, file6, file7], zipFilePath: zipFilePath)
+        try Zip.zipData(
+            archiveFiles: [
+                txtFile, txtFile1, txtFile2, txtFile3, txtFile4, txtFile5, txtFile6, txtFile7,
+                file, file1, file2, file3
+            ],
+            zipFilePath: zipFilePath
+        )
 
         let destinationPath = try autoRemovingSandbox()
         try Zip.unzipFile(zipFilePath, destination: destinationPath)
         
-        let fileURL = destinationPath.appendingPathComponent("a_b.txt")
-        let file1URL = destinationPath.appendingPathComponent("a_b (1).txt")
-        let file2URL = destinationPath.appendingPathComponent("a_b (2).txt")
-        let file3URL = destinationPath.appendingPathComponent("a_b (3).txt")
-        let file4URL = destinationPath.appendingPathComponent("a_b (4).txt")
-        let file5URL = destinationPath.appendingPathComponent("a_b (5).txt")
-        let file6URL = destinationPath.appendingPathComponent("a_b (6).txt")
-        let file7URL = destinationPath.appendingPathComponent("a_b (7).txt")
+        let txtFileURL = destinationPath.appendingPathComponent("a_b.txt")
+        let txtFile1URL = destinationPath.appendingPathComponent("a_b (1).txt")
+        let txtFile2URL = destinationPath.appendingPathComponent("a_b (2).txt")
+        let txtFile3URL = destinationPath.appendingPathComponent("a_b (3).txt")
+        let txtFile4URL = destinationPath.appendingPathComponent("a_b (4).txt")
+        let txtFile5URL = destinationPath.appendingPathComponent("a_b (5).txt")
+        let txtFile6URL = destinationPath.appendingPathComponent("a_b (6).txt")
+        let txtFile7URL = destinationPath.appendingPathComponent("a_b (7).txt")
+
+        let fileURL = destinationPath.appendingPathComponent("a_b")
+        let file1URL = destinationPath.appendingPathComponent("a_b (1)")
+        let file2URL = destinationPath.appendingPathComponent("a_b (2)")
+        let file3URL = destinationPath.appendingPathComponent("a_b (3)")
 
         print(try FileManager.default.contentsOfDirectory(atPath: destinationPath.path))
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFileURL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile1URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile2URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile3URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile4URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile5URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile6URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile7URL.path))
 
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: file1URL.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: file2URL.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: file3URL.path))
-        XCTAssertTrue(FileManager.default.fileExists(atPath: file4URL.path))
-        XCTAssertTrue(FileManager.default.fileExists(atPath: file5URL.path))
-        XCTAssertTrue(FileManager.default.fileExists(atPath: file6URL.path))
-        XCTAssertTrue(FileManager.default.fileExists(atPath: file7URL.path))
     }
     #endif
 }
