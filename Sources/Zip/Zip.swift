@@ -111,7 +111,7 @@ public class Zip {
                 let pathWithoutExtension = (pathString as NSString).deletingPathExtension
                 var newPathString = pathString
                 var counter = 1
-                while fileNames.contains(pathString) {
+                while fileNames.contains(newPathString) {
                     newPathString = "\(pathWithoutExtension) (\(counter)).\(pathExtension)"
                     counter += 1
                 }
