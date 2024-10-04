@@ -70,6 +70,11 @@ public class Zip {
         if unzGoToFirstFile(zip) != UNZ_OK {
             throw ZipError.unzipFail
         }
+
+        #if os(Windows)
+        let fileNames = Set<String>()
+        #endif
+
         repeat {
             if let cPassword = password?.cString(using: String.Encoding.ascii) {
                 ret = unzOpenCurrentFilePassword(zip, cPassword)
@@ -96,8 +101,21 @@ public class Zip {
             var pathString = String(cString: fileName)
 
             #if os(Windows)
-            guard pathString.rangeOfCharacter(from: ["<", ">", ":", "\"", "|", "?", "*"]) == nil else {
-                throw ZipError.unzipFail
+            // Windows Reserved Characters
+            let reservedCharacters: CharacterSet = ["<", ">", ":", "\"", "|", "?", "*"]
+
+            if pathString.rangeOfCharacter(from: reservedCharacters) != nil {
+                for character in reservedCharacters {
+                    pathString = pathString.replacingOccurrences(of: character, with: "_")
+                }
+
+                var counter = 1
+                while fileNames.contains(pathString) {
+                    pathString = pathString.replacingOccurrences(of: ".", with: "_\(counter).")
+                    counter += 1
+                }
+
+                fileNames.insert(pathString)
             }
             #endif
 

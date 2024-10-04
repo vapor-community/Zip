@@ -360,8 +360,6 @@ final class ZipTests: XCTestCase {
         try XCTAssertGreaterThan(Data(contentsOf: destinationPath.appendingPathComponent("kYkLkPf.gif")).count, 0)
     }
 
-    // This Zip file contains reserved characters that are not allowed on Windows.
-    #if !os(Windows)
     // Tests if https://github.com/vapor-community/Zip/issues/4 does not occur anymore.
     func testRoundTripping() throws {
         // "prod-apple-swift-metrics-main-e6a00d36.zip" is the original zip file from the issue.
@@ -403,5 +401,4 @@ final class ZipTests: XCTestCase {
         let newUnzippedFiles = try FileManager.default.contentsOfDirectory(atPath: newDestinationFolder.path)
         XCTAssertEqual(unzippedFiles, newUnzippedFiles)
     }
-    #endif
 }
