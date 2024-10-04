@@ -409,13 +409,14 @@ final class ZipTests: XCTestCase {
         let file2 = ArchiveFile(filename: "a>b.txt", data: "Hello, Swift!".data(using: .utf8)!)
         let file3 = ArchiveFile(filename: "a:b.txt", data: "Hello, World!".data(using: .utf8)!)
         let file4 = ArchiveFile(filename: "a\"b.txt", data: "Hi Windows!".data(using: .utf8)!)
-        let file5 = ArchiveFile(filename: "a|b.txt", data: "Hi Windows!".data(using: .utf8)!)
-        let file6 = ArchiveFile(filename: "a?b.txt", data: "Hello, Swift!".data(using: .utf8)!)
-        let file7 = ArchiveFile(filename: "a*b.txt", data: "Hi Windows!".data(using: .utf8)!)
+        let file5 = ArchiveFile(filename: "a|b.txt", data: "Hi Barbie!".data(using: .utf8)!)
+        let file6 = ArchiveFile(filename: "a?b.txt", data: "Hi, Ken!".data(using: .utf8)!)
+        let file7 = ArchiveFile(filename: "a*b.txt", data: "Hello Everyone!".data(using: .utf8)!)
+        let file8 = ArchiveFile(filename: "a<b.txt", data: "Hello again, World!".data(using: .utf8)!)
 
         let sandboxFolder = try autoRemovingSandbox()
         let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
-        try Zip.zipData(archiveFiles: [file, file1, file2, file3, file4, file5, file6, file7], zipFilePath: zipFilePath)
+        try Zip.zipData(archiveFiles: [file, file1, file2, file3, file4, file5, file6, file7, file8], zipFilePath: zipFilePath)
 
         let destinationPath = try autoRemovingSandbox()
         try Zip.unzipFile(zipFilePath, destination: destinationPath)
@@ -428,6 +429,7 @@ final class ZipTests: XCTestCase {
         let file5URL = destinationPath.appendingPathComponent("a_b (5).txt")
         let file6URL = destinationPath.appendingPathComponent("a_b (6).txt")
         let file7URL = destinationPath.appendingPathComponent("a_b (7).txt")
+        let file8URL = destinationPath.appendingPathComponent("a_b (8).txt")
 
         XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: file1URL.path))
@@ -437,6 +439,7 @@ final class ZipTests: XCTestCase {
         XCTAssertTrue(FileManager.default.fileExists(atPath: file5URL.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: file6URL.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: file7URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: file8URL.path))
     }
     #endif
 }
