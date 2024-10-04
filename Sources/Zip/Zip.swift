@@ -280,6 +280,9 @@ public class Zip {
                 var zipInfo: zip_fileinfo = zip_fileinfo(dos_date: 0, internal_fa: 0, external_fa: 0)
                 do {
                     let fileAttributes = try FileManager.default.attributesOfItem(atPath: filePath)
+                    if let fileDate = fileAttributes[FileAttributeKey.modificationDate] as? Date {
+                        zipInfo.dos_date = fileDate.dosDate
+                    }
                     if let fileSize = fileAttributes[FileAttributeKey.size] as? Double {
                         currentPosition += fileSize
                     }

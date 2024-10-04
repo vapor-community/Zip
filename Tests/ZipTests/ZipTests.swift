@@ -404,6 +404,7 @@ final class ZipTests: XCTestCase {
 
     #if os(Windows)
     func testWindowsReservedChars() throws {
+        let file0 = ArchiveFile(filename: "ab.txt", data: "Hello, Zip!".data(using: .utf8)!)
         let file = ArchiveFile(filename: "a_b.txt", data: "Hi Mom!".data(using: .utf8)!)
         let file1 = ArchiveFile(filename: "a<b.txt", data: "Hello, Zip!".data(using: .utf8)!)
         let file2 = ArchiveFile(filename: "a>b.txt", data: "Hello, Swift!".data(using: .utf8)!)
@@ -415,7 +416,7 @@ final class ZipTests: XCTestCase {
 
         let sandboxFolder = try autoRemovingSandbox()
         let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
-        try Zip.zipData(archiveFiles: [file, file1, file2, file3, file4, file5, file6, file7], zipFilePath: zipFilePath)
+        try Zip.zipData(archiveFiles: [file, file1, file2, file3, file4, file5, file6, file7, file0], zipFilePath: zipFilePath)
 
         let destinationPath = try autoRemovingSandbox()
         try Zip.unzipFile(zipFilePath, destination: destinationPath)
