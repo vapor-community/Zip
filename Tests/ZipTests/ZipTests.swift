@@ -401,4 +401,33 @@ final class ZipTests: XCTestCase {
         let newUnzippedFiles = try FileManager.default.contentsOfDirectory(atPath: newDestinationFolder.path)
         XCTAssertEqual(unzippedFiles, newUnzippedFiles)
     }
+
+    #if os(Windows)
+    func testWindowsReservedChars() throws {
+        let file1 = ArchiveFile(filename: "a:b.txt", data: "Hello, World!".data(using: .utf8)!)
+        let file2 = ArchiveFile(filename: "a_b.txt", data: "Hi Mom!".data(using: .utf8)!)
+        let file3 = ArchiveFile(filename: "a?b.txt", data: "Hello, Swift!".data(using: .utf8)!)
+        let file4 = ArchiveFile(filename: "a*b.txt", data: "Hi Windows!".data(using: .utf8)!)
+        let file5 = ArchiveFile(filename: "a<b.txt", data: "Hello, Zip!".data(using: .utf8)!)
+
+        let sandboxFolder = try autoRemovingSandbox()
+        let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
+        try Zip.zipData(archiveFiles: [file1, file2, file3, file4, file5], zipFilePath: zipFilePath)
+
+        let destinationPath = try autoRemovingSandbox()
+        try Zip.unzipFile(zipFilePath, destination: destinationPath)
+
+        let file1URL = destinationPath.appendingPathComponent("a_b.txt")
+        let file2URL = destinationPath.appendingPathComponent("a_b (1).txt")
+        let file3URL = destinationPath.appendingPathComponent("a_b (2).txt")
+        let file4URL = destinationPath.appendingPathComponent("a_b (3).txt")
+        let file5URL = destinationPath.appendingPathComponent("a_b (4).txt")
+
+        XCTAssertTrue(FileManager.default.fileExists(atPath: file1URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: file2URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: file3URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: file4URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: file5URL.path))
+    }
+    #endif
 }
