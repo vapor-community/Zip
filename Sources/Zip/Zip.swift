@@ -105,13 +105,13 @@ public class Zip {
             let reservedCharacters: CharacterSet = ["<", ">", ":", "\"", "|", "?", "*"]
 
             if pathString.rangeOfCharacter(from: reservedCharacters) != nil {
-                for character in ["<", ">", ":", "\"", "|", "?", "*"] {
-                    pathString = pathString.replacingOccurrences(of: character, with: "_")
-                }
+                pathString = pathString.components(separatedBy: reservedCharacters).joined(separator: "_")
 
                 var counter = 1
                 while fileNames.contains(pathString) {
-                    pathString = pathString.replacingOccurrences(of: ".", with: "_\(counter).")
+                    let pathExtension = (pathString as NSString).pathExtension
+                    let pathWithoutExtension = (pathString as NSString).deletingPathExtension
+                    pathString = "\(pathWithoutExtension) (\(counter)).\(pathExtension)"
                     counter += 1
                 }
 
