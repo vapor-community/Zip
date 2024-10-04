@@ -72,7 +72,7 @@ public class Zip {
         }
 
         #if os(Windows)
-        let fileNames = Set<String>()
+        var fileNames = Set<String>()
         #endif
 
         repeat {
@@ -105,7 +105,7 @@ public class Zip {
             let reservedCharacters: CharacterSet = ["<", ">", ":", "\"", "|", "?", "*"]
 
             if pathString.rangeOfCharacter(from: reservedCharacters) != nil {
-                for character in reservedCharacters {
+                for character in ["<", ">", ":", "\"", "|", "?", "*"] {
                     pathString = pathString.replacingOccurrences(of: character, with: "_")
                 }
 
