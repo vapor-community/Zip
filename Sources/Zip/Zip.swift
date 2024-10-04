@@ -105,7 +105,6 @@ public class Zip {
             let reservedCharacters: CharacterSet = ["<", ">", ":", "\"", "|", "?", "*"]
 
             if pathString.rangeOfCharacter(from: reservedCharacters) != nil {
-                print("XXXXXXXXXXXX-\(pathString)")
                 pathString = pathString.components(separatedBy: reservedCharacters).joined(separator: "_")
 
                 let pathExtension = (pathString as NSString).pathExtension
@@ -117,7 +116,8 @@ public class Zip {
                     counter += 1
                 }
 
-                print("YYYYYYYYYYYY-\(pathString)")
+                fileNames.insert(pathString)
+            } else {
                 fileNames.insert(pathString)
             }
             #endif

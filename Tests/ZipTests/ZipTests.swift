@@ -445,8 +445,6 @@ final class ZipTests: XCTestCase {
         let file2URL = destinationPath.appendingPathComponent("a_b (2)")
         let file3URL = destinationPath.appendingPathComponent("a_b (3)")
 
-        print(try FileManager.default.contentsOfDirectory(atPath: destinationPath.path))
-
         XCTAssertTrue(FileManager.default.fileExists(atPath: txtFileURL.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile1URL.path))
         XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile2URL.path))
