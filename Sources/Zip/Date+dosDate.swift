@@ -1,7 +1,7 @@
 #if canImport(Darwin) || compiler(<6.0)
-import Foundation
+    import Foundation
 #else
-import FoundationEssentials
+    import FoundationEssentials
 #endif
 
 extension Date {

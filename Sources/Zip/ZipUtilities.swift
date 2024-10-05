@@ -9,53 +9,49 @@
 import Foundation
 
 internal class ZipUtilities {
-    /*
-     Include root directory.
-     Default is true.
-     
-     e.g. The Test directory contains two files A.txt and B.txt.
-     
-     As true:
-     $ zip -r Test.zip Test/
-     $ unzip -l Test.zip
-        Test/
-        Test/A.txt
-        Test/B.txt
-     
-     As false:
-     $ zip -r Test.zip Test/
-     $ unzip -l Test.zip
-        A.txt
-        B.txt
-    */
+    /// Include root directory.
+    /// Default is `true`.
+    ///
+    /// e.g. The `Test` directory contains two files: `A.txt` and `B.txt`.
+    ///
+    /// When `true`:
+    /// ```bash
+    /// $ zip -r Test.zip Test/
+    /// $ unzip -l Test.zip
+    ///    Test/
+    ///    Test/A.txt
+    ///    Test/B.txt
+    /// ```
+    ///
+    /// When `false`:
+    /// ```bash
+    /// $ zip -r Test.zip Test/
+    /// $ unzip -l Test.zip
+    ///    A.txt
+    ///    B.txt
+    /// ```
     let includeRootDirectory = true
 
-    /**
-     *  ProcessedFilePath struct
-     */
     internal struct ProcessedFilePath {
         let filePathURL: URL
         let fileName: String?
-        
+
         var filePath: String {
             filePathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }
         }
     }
-    
+
     // MARK: Path processing
-    
-    /**
-     Process zip paths
-    
-     - Parameter paths: Paths as `URL`.
-    
-     - Returns: Array of `ProcessedFilePath` structs.
-    */
+
+    /// Process zip paths.
+    /// - Parameter paths: Paths as `URL`.
+    /// - Returns: Array of ``ProcessedFilePath`` structs.
     internal func processZipPaths(_ paths: [URL]) -> [ProcessedFilePath] {
         var processedFilePaths = [ProcessedFilePath]()
         for pathURL in paths {
             var isDirectory: ObjCBool = false
-            _ = FileManager.default.fileExists(atPath: pathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }, isDirectory: &isDirectory)
+            _ = FileManager.default.fileExists(
+                atPath: pathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }, isDirectory: &isDirectory)
             if !isDirectory.boolValue {
                 let processedPath = ProcessedFilePath(filePathURL: pathURL, fileName: pathURL.lastPathComponent)
                 processedFilePaths.append(processedPath)
@@ -66,21 +62,18 @@ internal class ZipUtilities {
         }
         return processedFilePaths
     }
-    
-    /**
-      Expand directory contents and parse them into `ProcessedFilePath` structs.
-     
-      - Parameter directory: Path of folder as `URL`.
-     
-      - Returns: Array of `ProcessedFilePath` structs.
-     */
+
+    /// Expand directory contents and parse them into ``ProcessedFilePath`` structs.
+    /// - Parameter directory: Path of folder as `URL`.
+    /// - Returns: Array of ``ProcessedFilePath`` structs.
     internal func expandDirectoryFilePath(_ directory: URL) -> [ProcessedFilePath] {
         var processedFilePaths = [ProcessedFilePath]()
         if let enumerator = FileManager.default.enumerator(atPath: directory.withUnsafeFileSystemRepresentation { String(cString: $0!) }) {
             while let filePathComponent = enumerator.nextObject() as? String {
                 let pathURL = directory.appendingPathComponent(filePathComponent)
                 var isDirectory: ObjCBool = false
-                _ = FileManager.default.fileExists(atPath: pathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }, isDirectory: &isDirectory)
+                _ = FileManager.default.fileExists(
+                    atPath: pathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }, isDirectory: &isDirectory)
                 if !isDirectory.boolValue {
                     var fileName = filePathComponent
                     if includeRootDirectory {

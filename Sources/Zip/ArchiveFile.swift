@@ -1,5 +1,5 @@
-import Foundation
 @_implementationOnly import CMinizip
+import Foundation
 
 /// Defines data saved in memory that will be archived as a file.
 public struct ArchiveFile {
@@ -34,26 +34,24 @@ public struct ArchiveFile {
 }
 
 extension Zip {
-    /**
-     Creates a zip file from an array of ``ArchiveFile``s
-     
-     - Parameters:
-       - archiveFiles: Array of ``ArchiveFile``.
-       - zipFilePath:  Destination `URL`, should lead to a `.zip` filepath.
-       - password:     The optional password string.
-       - compression:  The compression strategy to use.
-       - progress:     A progress closure called after unzipping each file in the archive. Double value betweem 0 and 1.
-     
-     - Throws: `ZipError.zipFail` if zipping fails.
-     
-     > Note: Supports implicit progress composition.
-     */
+    /// Creates a zip file from an array of ``ArchiveFile``s.
+    ///
+    /// - Parameters:
+    ///   - archiveFiles: Array of ``ArchiveFile``.
+    ///   - zipFilePath: Destination `URL`, should lead to a `.zip` filepath.
+    ///   - password: The optional password string.
+    ///   - compression: The compression strategy to use.
+    ///   - progress: A progress closure called after zipping each file in the archive. A `Double` value between 0 and 1.
+    ///
+    /// - Throws: ``ZipError/zipFail`` if zipping fails.
+    ///
+    /// > Note: Supports implicit progress composition.
     public class func zipData(
         archiveFiles: [ArchiveFile],
         zipFilePath: URL,
         password: String? = nil,
         compression: ZipCompression = .DefaultCompression,
-        progress: ((_ progress: Double) -> ())? = nil
+        progress: ((_ progress: Double) -> Void)? = nil
     ) throws {
         // Progress handler set up
         var currentPosition: Int = 0
@@ -111,7 +109,7 @@ extension Zip {
             currentPosition += archiveFile.data.count
 
             if let progressHandler = progress {
-                progressHandler((Double(currentPosition/totalSize)))
+                progressHandler((Double(currentPosition / totalSize)))
             }
 
             progressTracker.completedUnitCount = Int64(currentPosition)
