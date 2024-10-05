@@ -12,7 +12,6 @@ let package = Package(
     products: [
         .library(name: "Zip", targets: ["Zip"])
     ],
-    dependencies: [],
     targets: [
         .target(
             name: "CMinizip",

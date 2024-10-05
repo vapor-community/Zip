@@ -1,14 +1,6 @@
-//
-//  ZipUtilities.swift
-//  Zip
-//
-//  Created by Roy Marmelstein on 26/01/2016.
-//  Copyright © 2016 Roy Marmelstein. All rights reserved.
-//
-
 import Foundation
 
-internal class ZipUtilities {
+extension Zip {
     /// Include root directory.
     /// Default is `true`.
     ///
@@ -30,9 +22,9 @@ internal class ZipUtilities {
     ///    A.txt
     ///    B.txt
     /// ```
-    let includeRootDirectory = true
+    static let includeRootDirectory = true
 
-    internal struct ProcessedFilePath {
+    struct ProcessedFilePath {
         let filePathURL: URL
         let fileName: String?
 
@@ -44,14 +36,18 @@ internal class ZipUtilities {
     // MARK: Path processing
 
     /// Process zip paths.
+    ///
     /// - Parameter paths: Paths as `URL`.
+    ///
     /// - Returns: Array of ``ProcessedFilePath`` structs.
-    internal func processZipPaths(_ paths: [URL]) -> [ProcessedFilePath] {
+    static func processZipPaths(_ paths: [URL]) -> [ProcessedFilePath] {
         var processedFilePaths = [ProcessedFilePath]()
         for pathURL in paths {
             var isDirectory: ObjCBool = false
             _ = FileManager.default.fileExists(
-                atPath: pathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }, isDirectory: &isDirectory)
+                atPath: pathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) },
+                isDirectory: &isDirectory
+            )
             if !isDirectory.boolValue {
                 let processedPath = ProcessedFilePath(filePathURL: pathURL, fileName: pathURL.lastPathComponent)
                 processedFilePaths.append(processedPath)
@@ -64,19 +60,23 @@ internal class ZipUtilities {
     }
 
     /// Expand directory contents and parse them into ``ProcessedFilePath`` structs.
+    ///
     /// - Parameter directory: Path of folder as `URL`.
+    ///
     /// - Returns: Array of ``ProcessedFilePath`` structs.
-    internal func expandDirectoryFilePath(_ directory: URL) -> [ProcessedFilePath] {
+    static func expandDirectoryFilePath(_ directory: URL) -> [ProcessedFilePath] {
         var processedFilePaths = [ProcessedFilePath]()
         if let enumerator = FileManager.default.enumerator(atPath: directory.withUnsafeFileSystemRepresentation { String(cString: $0!) }) {
             while let filePathComponent = enumerator.nextObject() as? String {
                 let pathURL = directory.appendingPathComponent(filePathComponent)
                 var isDirectory: ObjCBool = false
                 _ = FileManager.default.fileExists(
-                    atPath: pathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }, isDirectory: &isDirectory)
+                    atPath: pathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) },
+                    isDirectory: &isDirectory
+                )
                 if !isDirectory.boolValue {
                     var fileName = filePathComponent
-                    if includeRootDirectory {
+                    if Self.includeRootDirectory {
                         fileName = (directory.lastPathComponent as NSString).appendingPathComponent(filePathComponent)
                     }
                     let processedPath = ProcessedFilePath(filePathURL: pathURL, fileName: fileName)
