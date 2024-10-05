@@ -12,7 +12,7 @@
         <img src="https://img.shields.io/codecov/c/github/vapor-community/Zip?style=plastic&logo=codecov&label=codecov">
     </a>
     <a href="https://swift.org">
-        <img src="https://design.vapor.codes/images/swift58up.svg" alt="Swift 5.8+">
+        <img src="https://design.vapor.codes/images/swift59up.svg" alt="Swift 5.9+">
     </a>
 </div>
 <br>

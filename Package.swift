@@ -1,4 +1,4 @@
-// swift-tools-version:5.8
+// swift-tools-version:5.9
 import PackageDescription
 #if canImport(Darwin) || compiler(<6.0)
 import Foundation
@@ -47,6 +47,9 @@ var swiftSettings: [SwiftSetting] { [
     .enableUpcomingFeature("ExistentialAny"),
     .enableUpcomingFeature("ConciseMagicFile"),
     .enableUpcomingFeature("ForwardTrailingClosures"),
+    .enableUpcomingFeature("DisableOutwardActorInference"),
+    .enableUpcomingFeature("StrictConcurrency"),
+    .enableExperimentalFeature("StrictConcurrency=complete"),
 ] }
 
 if let target = package.targets.filter({ $0.name == "CMinizip" }).first {
