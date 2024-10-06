@@ -120,11 +120,6 @@ public class Zip {
                 throw ZipError.unzipFail
             }
 
-            let fileInfoSizeFileName = Int(fileInfo.size_filename - 1)
-            let isDirectory =
-                fileName[fileInfoSizeFileName] == "/".cString(using: String.Encoding.utf8)?.first
-                || fileName[fileInfoSizeFileName] == "\\".cString(using: String.Encoding.utf8)?.first
-
             if pathString.rangeOfCharacter(from: CharacterSet(charactersIn: "/\\")) != nil {
                 pathString = pathString.replacingOccurrences(of: "\\", with: "/")
             }
@@ -148,6 +143,10 @@ public class Zip {
                     .modificationDate: creationDate,
                 ]
             #endif
+
+            let isDirectory =
+                fileName[Int(fileInfo.size_filename - 1)] == "/".cString(using: String.Encoding.utf8)?.first
+                || fileName[Int(fileInfo.size_filename - 1)] == "\\".cString(using: String.Encoding.utf8)?.first
 
             do {
                 if isDirectory {
