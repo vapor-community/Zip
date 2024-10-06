@@ -426,6 +426,7 @@ final class ZipTests: XCTestCase {
 
             let sandboxFolder = try autoRemovingSandbox()
             let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
+            print("XXXXXXXXXXXXXXXXX", zipFilePath)
             try Zip.zipData(
                 archiveFiles: [
                     txtFile, txtFile1, txtFile2, txtFile3, txtFile4, txtFile5, txtFile6, txtFile7,

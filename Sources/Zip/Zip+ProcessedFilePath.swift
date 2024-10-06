@@ -22,7 +22,7 @@ extension Zip {
     ///    A.txt
     ///    B.txt
     /// ```
-    static let includeRootDirectory = true
+    private static let includeRootDirectory = true
 
     struct ProcessedFilePath {
         let filePathURL: URL
@@ -52,7 +52,7 @@ extension Zip {
                 let processedPath = ProcessedFilePath(filePathURL: pathURL, fileName: pathURL.lastPathComponent)
                 processedFilePaths.append(processedPath)
             } else {
-                let directoryContents = expandDirectoryFilePath(pathURL)
+                let directoryContents = Self.expandDirectoryFilePath(pathURL)
                 processedFilePaths.append(contentsOf: directoryContents)
             }
         }
@@ -64,7 +64,7 @@ extension Zip {
     /// - Parameter directory: Path of folder as `URL`.
     ///
     /// - Returns: Array of ``ProcessedFilePath`` structs.
-    static func expandDirectoryFilePath(_ directory: URL) -> [ProcessedFilePath] {
+    private static func expandDirectoryFilePath(_ directory: URL) -> [ProcessedFilePath] {
         var processedFilePaths = [ProcessedFilePath]()
         if let enumerator = FileManager.default.enumerator(atPath: directory.withUnsafeFileSystemRepresentation { String(cString: $0!) }) {
             while let filePathComponent = enumerator.nextObject() as? String {

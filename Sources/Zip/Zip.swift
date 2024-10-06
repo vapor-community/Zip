@@ -100,7 +100,7 @@ public class Zip {
                 // Windows Reserved Characters
                 let reservedCharacters: CharacterSet = ["<", ">", ":", "\"", "|", "?", "*"]
 
-                if pathString.rangeOfCharacter(from: reservedCharacters) != nil {
+                guard pathString.rangeOfCharacter(from: reservedCharacters) == nil else {
                     pathString = pathString.components(separatedBy: reservedCharacters).joined(separator: "_")
 
                     let pathExtension = (pathString as NSString).pathExtension
@@ -111,11 +111,9 @@ public class Zip {
                         pathString = pathExtension.isEmpty ? newFileName : newFileName.appendingPathExtension(pathExtension) ?? newFileName
                         counter += 1
                     }
-
-                    fileNames.insert(pathString)
-                } else {
-                    fileNames.insert(pathString)
                 }
+
+                fileNames.insert(pathString)
             #endif
 
             guard !pathString.isEmpty else {
@@ -126,6 +124,7 @@ public class Zip {
             let isDirectory =
                 fileName[fileInfoSizeFileName] == "/".cString(using: String.Encoding.utf8)?.first
                 || fileName[fileInfoSizeFileName] == "\\".cString(using: String.Encoding.utf8)?.first
+
             if pathString.rangeOfCharacter(from: CharacterSet(charactersIn: "/\\")) != nil {
                 pathString = pathString.replacingOccurrences(of: "\\", with: "/")
             }
