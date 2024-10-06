@@ -100,7 +100,7 @@ public class Zip {
                 // Windows Reserved Characters
                 let reservedCharacters: CharacterSet = ["<", ">", ":", "\"", "|", "?", "*"]
 
-                guard pathString.rangeOfCharacter(from: reservedCharacters) == nil else {
+                if pathString.rangeOfCharacter(from: reservedCharacters) != nil {
                     pathString = pathString.components(separatedBy: reservedCharacters).joined(separator: "_")
 
                     let pathExtension = (pathString as NSString).pathExtension
