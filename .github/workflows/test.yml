@@ -12,6 +12,7 @@ jobs:
     with:
       with_linting: true
       with_musl: true
+      ios_scheme_name: Zip-Package
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
