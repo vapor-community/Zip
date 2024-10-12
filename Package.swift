@@ -9,6 +9,13 @@ import PackageDescription
 
 let package = Package(
     name: "Zip",
+    platforms: [
+        .macOS(.v13),
+        .iOS(.v15),
+        .tvOS(.v15),
+        .watchOS(.v8),
+        .visionOS(.v1),
+    ],
     products: [
         .library(name: "Zip", targets: ["Zip"])
     ],
