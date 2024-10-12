@@ -36,7 +36,7 @@ let package = Package(
                 .target(name: "Zip")
             ],
             resources: [
-                .copy("Resources")
+                .copy("TestResources")
             ],
             swiftSettings: swiftSettings
         ),
