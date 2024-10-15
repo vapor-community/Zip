@@ -38,6 +38,16 @@ and add it to your target's dependencies:
 .product(name: "Zip", package: "zip")
 ```
 
+### Supported Platforms
+
+Zip supports all platforms supported by Swift 5.9 and later.
+
+To use Zip on Windows, you need to pass an available build of `zlib` to the build via extended flags. For example:
+
+```shell
+swift build -Xcc -I'C:/pathTo/zlib/include' -Xlinker -L'C:/pathTo/zlib/lib'
+```
+
 ### Quick Functions
 
 The easiest way to use Zip is through quick functions. Both take local file paths as `URL`s, throw if an error is encountered and return an `URL` to the destination if successful.
