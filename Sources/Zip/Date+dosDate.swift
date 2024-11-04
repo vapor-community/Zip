@@ -7,7 +7,7 @@
 extension Date {
     var dosDate: UInt32 {
         let components = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute, .second], from: self)
-        
+
         let year = UInt32(components.year! - 1980) << 25
         let month = UInt32(components.month!) << 21
         let day = UInt32(components.day!) << 16

@@ -103,11 +103,3 @@ do {
   print("Something went wrong")
 }
 ```
-
-### Custom File Extensions
-
-Zip supports `.zip` and `.cbz` files out of the box. To support additional zip-derivative file extensions:
-
-```swift
-Zip.addCustomFileExtension("file-extension-here")
-```

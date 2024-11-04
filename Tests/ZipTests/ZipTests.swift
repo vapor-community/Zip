@@ -34,7 +34,7 @@ final class ZipTests: XCTestCase {
         return sandbox
     }
 
-    func testDeprecatedAPIs() throws{
+    func testDeprecatedAPIs() throws {
         _ = Zip()
 
         let archiveFile = ArchiveFile(
