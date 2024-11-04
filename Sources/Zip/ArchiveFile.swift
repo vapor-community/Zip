@@ -107,21 +107,18 @@ extension Zip {
 
             // Update progress handler
             currentPosition += archiveFile.data.count
-
-            if let progressHandler = progress {
-                progressHandler((Double(currentPosition / totalSize)))
+            if let progress {
+                progress(Double(currentPosition / totalSize))
             }
-
             progressTracker.completedUnitCount = Int64(currentPosition)
         }
 
         zipClose(zip, nil)
 
         // Completed. Update progress handler.
-        if let progressHandler = progress {
-            progressHandler(1.0)
+        if let progress {
+            progress(1.0)
         }
-
         progressTracker.completedUnitCount = Int64(totalSize)
     }
 }
