@@ -34,23 +34,6 @@ final class ZipTests: XCTestCase {
         return sandbox
     }
 
-    func testDeprecatedAPIs() throws {
-        _ = Zip()
-
-        let archiveFile = ArchiveFile(
-            filename: "file.txt",
-            data: NSData(data: "Hi Mom!".data(using: .utf8)!),
-            modifiedTime: Date()
-        )
-        let sandboxFolder = try autoRemovingSandbox()
-        let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
-        try Zip.zipData(archiveFiles: [archiveFile], zipFilePath: zipFilePath)
-
-        Zip.addCustomFileExtension("test")
-        Zip.removeCustomFileExtension("test")
-        XCTAssertFalse(Zip.isValidFileExtension("test"))
-    }
-
     func testQuickUnzip() throws {
         let filePath = url(forResource: "bb8", withExtension: "zip")!
         let destinationURL = try Zip.quickUnzipFile(filePath)
@@ -272,9 +255,41 @@ final class ZipTests: XCTestCase {
         XCTAssertTrue(fileManager.fileExists(atPath: imageURL.path))
     }
 
+    func testAddedCustomFileExtensionIsValid() {
+        let fileExtension = "cstm"
+        Zip.addCustomFileExtension(fileExtension)
+        let result = Zip.isValidFileExtension(fileExtension)
+        XCTAssertTrue(result)
+        Zip.removeCustomFileExtension(fileExtension)
+    }
+
+    func testRemovedCustomFileExtensionIsInvalid() {
+        let fileExtension = "cstm"
+        Zip.addCustomFileExtension(fileExtension)
+        Zip.removeCustomFileExtension(fileExtension)
+        let result = Zip.isValidFileExtension(fileExtension)
+        XCTAssertFalse(result)
+    }
+
+    func testDefaultFileExtensionsIsValid() {
+        XCTAssertTrue(Zip.isValidFileExtension("zip"))
+        XCTAssertTrue(Zip.isValidFileExtension("cbz"))
+    }
+
+    func testDefaultFileExtensionsIsNotRemoved() {
+        Zip.removeCustomFileExtension("zip")
+        Zip.removeCustomFileExtension("cbz")
+        XCTAssertTrue(Zip.isValidFileExtension("zip"))
+        XCTAssertTrue(Zip.isValidFileExtension("cbz"))
+    }
+
     func testZipData() throws {
         let archiveFile1 = ArchiveFile(filename: "file1.txt", data: "Hello, World!".data(using: .utf8)!)
-        let archiveFile2 = ArchiveFile(filename: "file2.txt", data: "Hi Mom!".data(using: .utf8)!, modifiedTime: Date())
+        let archiveFile2 = ArchiveFile(
+            filename: "file2.txt",
+            data: NSData(data: "Hi Mom!".data(using: .utf8)!),
+            modifiedTime: Date()
+        )
         let emptyArchiveFile = ArchiveFile(filename: "empty.txt", data: Data())
         let sandboxFolder = try autoRemovingSandbox()
         let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
@@ -284,7 +299,11 @@ final class ZipTests: XCTestCase {
 
     func testZipDataProgress() throws {
         let archiveFile1 = ArchiveFile(filename: "file1.txt", data: "Hello, World!".data(using: .utf8)!)
-        let archiveFile2 = ArchiveFile(filename: "file2.txt", data: "Hi Mom!".data(using: .utf8)!, modifiedTime: Date())
+        let archiveFile2 = ArchiveFile(
+            filename: "file2.txt",
+            data: NSData(data: "Hi Mom!".data(using: .utf8)!),
+            modifiedTime: Date()
+        )
         let emptyArchiveFile = ArchiveFile(filename: "empty.txt", data: Data())
         let sandboxFolder = try autoRemovingSandbox()
         let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
@@ -312,6 +331,13 @@ final class ZipTests: XCTestCase {
         XCTAssertEqual(0b10000011_00110001_10001100_00110001, Date(timeIntervalSince1970: 2_389_282_415).dosDate)
         XCTAssertEqual(0b00000001_00110001_10001100_00110001, Date(timeIntervalSince1970: 338_060_015).dosDate)
         XCTAssertEqual(0b00000000_00100001_00000000_00000000, Date(timeIntervalSince1970: 315_532_800).dosDate)
+    }
+
+    func testInit() {
+        var zip: Zip? = Zip()
+        XCTAssertNotNil(zip)
+        zip = nil
+        XCTAssertNil(zip)
     }
 
     func testUnzipWithoutPassword() throws {
@@ -445,6 +471,7 @@ final class ZipTests: XCTestCase {
     func testPassKitExtensions() throws {
         let pkpassURL = url(forResource: "PassKitTest", withExtension: "pkpass")!
         let pkpassDestination = try autoRemovingSandbox()
+        Zip.addCustomFileExtension("pkpass")
         XCTAssertNoThrow(try Zip.unzipFile(pkpassURL, destination: pkpassDestination))
         XCTAssert(FileManager.default.fileExists(atPath: pkpassDestination.appendingPathComponent("pass.json").path))
         XCTAssert(FileManager.default.fileExists(atPath: pkpassDestination.appendingPathComponent("manifest.json").path))
@@ -454,6 +481,7 @@ final class ZipTests: XCTestCase {
 
         let orderURL = url(forResource: "PassKitTest", withExtension: "order")!
         let orderDestination = try autoRemovingSandbox()
+        Zip.addCustomFileExtension("order")
         XCTAssertNoThrow(try Zip.unzipFile(orderURL, destination: orderDestination))
         XCTAssert(FileManager.default.fileExists(atPath: orderDestination.appendingPathComponent("order.json").path))
         XCTAssert(FileManager.default.fileExists(atPath: orderDestination.appendingPathComponent("manifest.json").path))

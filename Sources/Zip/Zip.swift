@@ -11,6 +11,10 @@ import Foundation
 
 /// Main class that handles zipping and unzipping of files.
 public class Zip {
+    // Set of vaild file extensions
+    nonisolated(unsafe) private static var customFileExtensions: Set<String> = []
+    private static let lock = NSLock()
+
     @available(*, deprecated, message: "Do not use this initializer. Zip is a utility class and should not be instantiated.")
     public init() {}
 
@@ -37,7 +41,7 @@ public class Zip {
     ) throws {
         // Check whether a zip file exists at path.
         let path = zipFilePath.withUnsafeFileSystemRepresentation { String(cString: $0!) }
-        if !FileManager.default.fileExists(atPath: path) {
+        if !FileManager.default.fileExists(atPath: path) || !isValidFileExtension(zipFilePath.pathExtension) {
             throw ZipError.fileNotFound
         }
 
@@ -334,12 +338,33 @@ public class Zip {
         progressTracker.completedUnitCount = Int64(totalSize)
     }
 
-    @available(*, deprecated, message: "No longer needed. If the file extension is not supported, an error will be thrown.")
-    public class func addCustomFileExtension(_ fileExtension: String) {}
+    /// Adds a file extension to the set of custom file extensions.
+    ///
+    /// - Parameter fileExtension: A file extension.
+    public class func addCustomFileExtension(_ fileExtension: String) {
+        _ = lock.withLock {
+            customFileExtensions.insert(fileExtension)
+        }
+    }
 
-    @available(*, deprecated, message: "No longer needed. If the file extension is not supported, an error will be thrown.")
-    public class func removeCustomFileExtension(_ fileExtension: String) {}
+    /// Removes a file extension from the set of custom file extensions.
+    ///
+    /// - Parameter fileExtension: A file extension.
+    public class func removeCustomFileExtension(_ fileExtension: String) {
+        _ = lock.withLock {
+            customFileExtensions.remove(fileExtension)
+        }
+    }
 
-    @available(*, deprecated, message: "No longer needed. If the file extension is not supported, an error will be thrown.")
-    public class func isValidFileExtension(_ fileExtension: String) -> Bool { false }
+    /// Checks if a specific file extension is valid.
+    ///
+    /// - Parameter fileExtension: A file extension to check.
+    ///
+    /// - Returns: `true` if the extension is valid, otherwise `false`.
+    public class func isValidFileExtension(_ fileExtension: String) -> Bool {
+        let validFileExtensions = lock.withLock {
+            customFileExtensions.union(["zip", "cbz"])
+        }
+        return validFileExtensions.contains(fileExtension)
+    }
 }
