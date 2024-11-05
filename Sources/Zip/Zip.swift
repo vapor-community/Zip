@@ -12,7 +12,11 @@ import Foundation
 /// Main class that handles zipping and unzipping of files.
 public class Zip {
     // Set of vaild file extensions
-    nonisolated(unsafe) private static var customFileExtensions: Set<String> = []
+    #if compiler(>=6.0)
+        nonisolated(unsafe) private static var customFileExtensions: Set<String> = []
+    #else
+        private static var customFileExtensions: Set<String> = []
+    #endif
     private static let lock = NSLock()
 
     @available(*, deprecated, message: "Do not use this initializer. Zip is a utility class and should not be instantiated.")
@@ -138,11 +142,11 @@ public class Zip {
                 throw ZipError.unzipFail
             }
 
-            let creationDate = Date()
             let directoryAttributes: [FileAttributeKey: Any]?
             #if (os(Linux) || os(Windows)) && compiler(<6.0)
                 directoryAttributes = nil
             #else
+                let creationDate = Date()
                 directoryAttributes = [
                     .creationDate: creationDate,
                     .modificationDate: creationDate,
@@ -342,18 +346,18 @@ public class Zip {
     ///
     /// - Parameter fileExtension: A file extension.
     public class func addCustomFileExtension(_ fileExtension: String) {
-        _ = lock.withLock {
-            customFileExtensions.insert(fileExtension)
-        }
+        lock.lock()
+        customFileExtensions.insert(fileExtension)
+        lock.unlock()
     }
 
     /// Removes a file extension from the set of custom file extensions.
     ///
     /// - Parameter fileExtension: A file extension.
     public class func removeCustomFileExtension(_ fileExtension: String) {
-        _ = lock.withLock {
-            customFileExtensions.remove(fileExtension)
-        }
+        lock.lock()
+        customFileExtensions.remove(fileExtension)
+        lock.unlock()
     }
 
     /// Checks if a specific file extension is valid.
@@ -362,9 +366,9 @@ public class Zip {
     ///
     /// - Returns: `true` if the extension is valid, otherwise `false`.
     public class func isValidFileExtension(_ fileExtension: String) -> Bool {
-        let validFileExtensions = lock.withLock {
-            customFileExtensions.union(["zip", "cbz"])
-        }
+        lock.lock()
+        let validFileExtensions = customFileExtensions.union(["zip", "cbz"])
+        lock.unlock()
         return validFileExtensions.contains(fileExtension)
     }
 }
