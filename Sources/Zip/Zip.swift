@@ -41,7 +41,7 @@ public class Zip {
         fileOutputHandler: ((_ unzippedFile: URL) -> Void)? = nil
     ) throws {
         // Check whether a zip file exists at path.
-        let path = zipFilePath.withUnsafeFileSystemRepresentation { String(cString: $0!) }
+        let path = zipFilePath.nativePath
         if !FileManager.default.fileExists(atPath: path) || !isValidFileExtension(zipFilePath.pathExtension) {
             throw ZipError.fileNotFound
         }
@@ -129,13 +129,11 @@ public class Zip {
                 pathString = pathString.replacingOccurrences(of: "\\", with: "/")
             }
 
-            let fullPath = destination.appendingPathComponent(pathString).standardizedFileURL.withUnsafeFileSystemRepresentation {
-                String(cString: $0!)
-            }
+            let fullPath = destination.appendingPathComponent(pathString).standardizedFileURL.nativePath
 
             // `.standardizedFileURL` removes any `..` to move a level up.
             // If we then check that the `fullPath` starts with the destination directory we know we are not extracting "outside" the destination.
-            guard fullPath.starts(with: destination.standardizedFileURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }) else {
+            guard fullPath.starts(with: destination.standardizedFileURL.nativePath) else {
                 throw ZipError.unzipFail
             }
 
@@ -274,7 +272,7 @@ public class Zip {
         progressTracker.kind = ProgressKind.file
 
         // Begin Zipping
-        let zip = zipOpen(zipFilePath.withUnsafeFileSystemRepresentation { String(cString: $0!) }, APPEND_STATUS_CREATE)
+        let zip = zipOpen(zipFilePath.nativePath, APPEND_STATUS_CREATE)
 
         for path in processedPaths {
             let filePath = path.filePath
