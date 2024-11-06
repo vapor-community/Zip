@@ -55,8 +55,6 @@ extension Zip {
         compression: ZipCompression = .DefaultCompression,
         progress: ((_ progress: Double) -> ())? = nil
     ) throws {
-        let destinationPath = zipFilePath.path
-
         // Progress handler set up
         var currentPosition: Int = 0
         var totalSize: Int = 0
@@ -71,7 +69,7 @@ extension Zip {
         progressTracker.kind = ProgressKind.file
 
         // Begin Zipping
-        let zip = zipOpen(destinationPath, APPEND_STATUS_CREATE)
+        let zip = zipOpen(zipFilePath.nativePath, APPEND_STATUS_CREATE)
 
         for archiveFile in archiveFiles {
             // Skip empty data

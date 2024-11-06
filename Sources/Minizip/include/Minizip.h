@@ -9,9 +9,9 @@
 #ifndef Minizip_h
 #define Minizip_h
 
-#import "ioapi.h"
-#import "crypt.h"
-#import "unzip.h"
-#import "zip.h"
+#include "ioapi.h"
+#include "crypt.h"
+#include "unzip.h"
+#include "zip.h"
 
 #endif /* Minizip_h */
