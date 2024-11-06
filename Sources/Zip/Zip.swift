@@ -153,15 +153,16 @@ public class Zip {
                 || fileName[Int(fileInfo.size_filename - 1)] == "\\".cString(using: String.Encoding.utf8)?.first
 
             do {
+                try FileManager.default.createDirectory(
+                    atPath: (fullPath as NSString).deletingLastPathComponent,
+                    withIntermediateDirectories: true,
+                    attributes: directoryAttributes
+                )
+
                 if isDirectory {
                     try FileManager.default.createDirectory(
                         atPath: fullPath,
-                        withIntermediateDirectories: true,
-                        attributes: directoryAttributes)
-                } else {
-                    try FileManager.default.createDirectory(
-                        atPath: (fullPath as NSString).deletingLastPathComponent,
-                        withIntermediateDirectories: true,
+                        withIntermediateDirectories: false,
                         attributes: directoryAttributes
                     )
                 }
