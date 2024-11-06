@@ -1,6 +1,6 @@
 import Foundation
 
-extension Zip {
+extension FileManager {
     struct ProcessedFilePath {
         let filePathURL: URL
         let fileName: String?
@@ -12,12 +12,12 @@ extension Zip {
 
     /// Process zip paths.
     ///
-    /// - Parameter paths: Paths as `URL`.
+    /// - Parameter roots: Paths as `URL`.
     ///
     /// - Returns: Array of ``ProcessedFilePath`` structs.
-    static func processZipPaths(_ paths: [URL]) -> [ProcessedFilePath] {
+    static func fileSubPaths(from roots: [URL]) -> [ProcessedFilePath] {
         var processedFilePaths = [ProcessedFilePath]()
-        for pathURL in paths {
+        for pathURL in roots {
             var isDirectory: ObjCBool = false
             _ = FileManager.default.fileExists(
                 atPath: pathURL.nativePath,

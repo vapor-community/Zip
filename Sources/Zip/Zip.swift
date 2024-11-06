@@ -250,7 +250,7 @@ public class Zip {
         compression: ZipCompression = .DefaultCompression,
         progress: ((_ progress: Double) -> Void)? = nil
     ) throws {
-        let processedPaths = Self.processZipPaths(paths)
+        let processedPaths = FileManager.fileSubPaths(from: paths)
 
         let chunkSize = 16384
 
