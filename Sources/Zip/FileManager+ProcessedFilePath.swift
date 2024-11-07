@@ -1,26 +1,26 @@
 import Foundation
 
-extension Zip {
+extension FileManager {
     struct ProcessedFilePath {
         let filePathURL: URL
         let fileName: String?
 
         var filePath: String {
-            filePathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }
+            filePathURL.nativePath
         }
     }
 
     /// Process zip paths.
     ///
-    /// - Parameter paths: Paths as `URL`.
+    /// - Parameter roots: Paths as `URL`.
     ///
     /// - Returns: Array of ``ProcessedFilePath`` structs.
-    static func processZipPaths(_ paths: [URL]) -> [ProcessedFilePath] {
+    static func fileSubPaths(from roots: [URL]) -> [ProcessedFilePath] {
         var processedFilePaths = [ProcessedFilePath]()
-        for pathURL in paths {
+        for pathURL in roots {
             var isDirectory: ObjCBool = false
             _ = FileManager.default.fileExists(
-                atPath: pathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) },
+                atPath: pathURL.nativePath,
                 isDirectory: &isDirectory
             )
 
@@ -42,13 +42,13 @@ extension Zip {
     /// - Returns: Array of ``ProcessedFilePath`` structs.
     private static func expandDirectoryFilePath(_ directory: URL) -> [ProcessedFilePath] {
         var processedFilePaths = [ProcessedFilePath]()
-        if let enumerator = FileManager.default.enumerator(atPath: directory.withUnsafeFileSystemRepresentation { String(cString: $0!) }) {
+        if let enumerator = FileManager.default.enumerator(atPath: directory.nativePath) {
             while let filePathComponent = enumerator.nextObject() as? String {
                 let pathURL = directory.appendingPathComponent(filePathComponent)
 
                 var isDirectory: ObjCBool = false
                 _ = FileManager.default.fileExists(
-                    atPath: pathURL.withUnsafeFileSystemRepresentation { String(cString: $0!) },
+                    atPath: pathURL.nativePath,
                     isDirectory: &isDirectory
                 )
 

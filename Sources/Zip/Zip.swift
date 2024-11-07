@@ -44,7 +44,7 @@ public class Zip {
         fileOutputHandler: ((_ unzippedFile: URL) -> Void)? = nil
     ) throws {
         // Check whether a zip file exists at path.
-        let path = zipFilePath.withUnsafeFileSystemRepresentation { String(cString: $0!) }
+        let path = zipFilePath.nativePath
         if !FileManager.default.fileExists(atPath: path) || !isValidFileExtension(zipFilePath.pathExtension) {
             throw ZipError.fileNotFound
         }
@@ -132,13 +132,11 @@ public class Zip {
                 pathString = pathString.replacingOccurrences(of: "\\", with: "/")
             }
 
-            let fullPath = destination.appendingPathComponent(pathString).standardizedFileURL.withUnsafeFileSystemRepresentation {
-                String(cString: $0!)
-            }
+            let fullPath = destination.appendingPathComponent(pathString).standardizedFileURL.nativePath
 
             // `.standardizedFileURL` removes any `..` to move a level up.
             // If we then check that the `fullPath` starts with the destination directory we know we are not extracting "outside" the destination.
-            guard fullPath.starts(with: destination.standardizedFileURL.withUnsafeFileSystemRepresentation { String(cString: $0!) }) else {
+            guard fullPath.starts(with: destination.standardizedFileURL.nativePath) else {
                 throw ZipError.unzipFail
             }
 
@@ -158,15 +156,16 @@ public class Zip {
                 || fileName[Int(fileInfo.size_filename - 1)] == "\\".cString(using: String.Encoding.utf8)?.first
 
             do {
+                try FileManager.default.createDirectory(
+                    atPath: (fullPath as NSString).deletingLastPathComponent,
+                    withIntermediateDirectories: true,
+                    attributes: directoryAttributes
+                )
+                
                 if isDirectory {
                     try FileManager.default.createDirectory(
                         atPath: fullPath,
-                        withIntermediateDirectories: true,
-                        attributes: directoryAttributes)
-                } else {
-                    try FileManager.default.createDirectory(
-                        atPath: (fullPath as NSString).deletingLastPathComponent,
-                        withIntermediateDirectories: true,
+                        withIntermediateDirectories: false,
                         attributes: directoryAttributes
                     )
                 }
@@ -251,7 +250,7 @@ public class Zip {
         compression: ZipCompression = .DefaultCompression,
         progress: ((_ progress: Double) -> Void)? = nil
     ) throws {
-        let processedPaths = Self.processZipPaths(paths)
+        let processedPaths = FileManager.fileSubPaths(from: paths)
 
         let chunkSize = 16384
 
@@ -274,7 +273,7 @@ public class Zip {
         progressTracker.kind = ProgressKind.file
 
         // Begin Zipping
-        let zip = zipOpen(zipFilePath.withUnsafeFileSystemRepresentation { String(cString: $0!) }, APPEND_STATUS_CREATE)
+        let zip = zipOpen(zipFilePath.nativePath, APPEND_STATUS_CREATE)
 
         for path in processedPaths {
             let filePath = path.filePath
