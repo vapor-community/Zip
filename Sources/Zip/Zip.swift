@@ -161,7 +161,7 @@ public class Zip {
                     withIntermediateDirectories: true,
                     attributes: directoryAttributes
                 )
-                
+
                 if isDirectory {
                     try FileManager.default.createDirectory(
                         atPath: fullPath,
