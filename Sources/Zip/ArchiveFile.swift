@@ -1,5 +1,5 @@
+@_implementationOnly import CMinizip
 import Foundation
-@_implementationOnly import Minizip
 
 /// Defines data saved in memory that will be archived as a file.
 public struct ArchiveFile {
@@ -34,29 +34,25 @@ public struct ArchiveFile {
 }
 
 extension Zip {
-    /**
-     Creates a zip file from an array of ``ArchiveFile``s
-     
-     - Parameters:
-       - archiveFiles: Array of ``ArchiveFile``.
-       - zipFilePath:  Destination `URL`, should lead to a `.zip` filepath.
-       - password:     The optional password string.
-       - compression:  The compression strategy to use.
-       - progress:     A progress closure called after unzipping each file in the archive. Double value betweem 0 and 1.
-     
-     - Throws: `ZipError.zipFail` if zipping fails.
-     
-     > Note: Supports implicit progress composition.
-     */
+    /// Creates a zip file from an array of ``ArchiveFile``s.
+    ///
+    /// - Parameters:
+    ///   - archiveFiles: Array of ``ArchiveFile``.
+    ///   - zipFilePath: Destination `URL`, should lead to a `.zip` filepath.
+    ///   - password: The optional password string.
+    ///   - compression: The compression strategy to use.
+    ///   - progress: A progress closure called after zipping each file in the archive. A `Double` value between 0 and 1.
+    ///
+    /// - Throws: ``ZipError/zipFail`` if zipping fails.
+    ///
+    /// > Note: Supports implicit progress composition.
     public class func zipData(
         archiveFiles: [ArchiveFile],
         zipFilePath: URL,
         password: String? = nil,
         compression: ZipCompression = .DefaultCompression,
-        progress: ((_ progress: Double) -> ())? = nil
+        progress: ((_ progress: Double) -> Void)? = nil
     ) throws {
-        let destinationPath = zipFilePath.path
-
         // Progress handler set up
         var currentPosition: Int = 0
         var totalSize: Int = 0
@@ -71,7 +67,7 @@ extension Zip {
         progressTracker.kind = ProgressKind.file
 
         // Begin Zipping
-        let zip = zipOpen(destinationPath, APPEND_STATUS_CREATE)
+        let zip = zipOpen(zipFilePath.nativePath, APPEND_STATUS_CREATE)
 
         for archiveFile in archiveFiles {
             // Skip empty data
@@ -111,21 +107,18 @@ extension Zip {
 
             // Update progress handler
             currentPosition += archiveFile.data.count
-
-            if let progressHandler = progress {
-                progressHandler((Double(currentPosition/totalSize)))
+            if let progress {
+                progress(Double(currentPosition / totalSize))
             }
-
             progressTracker.completedUnitCount = Int64(currentPosition)
         }
 
         zipClose(zip, nil)
 
         // Completed. Update progress handler.
-        if let progressHandler = progress {
-            progressHandler(1.0)
+        if let progress {
+            progress(1.0)
         }
-
         progressTracker.completedUnitCount = Int64(totalSize)
     }
 }

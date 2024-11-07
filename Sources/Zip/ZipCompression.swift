@@ -1,4 +1,4 @@
-@_implementationOnly import Minizip
+@_implementationOnly import CMinizip
 
 /// Zip compression strategies.
 public enum ZipCompression: Int {
