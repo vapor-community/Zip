@@ -179,6 +179,8 @@ final class ZipTests: XCTestCase {
             let expectedPermissions = 0o700
         #elseif os(Windows) && compiler(>=6.0)
             let expectedPermissions = 0o600
+        #elseif os(Android)
+            let expectedPermissions = 0o666
         #else
             let expectedPermissions = 0o644
         #endif
