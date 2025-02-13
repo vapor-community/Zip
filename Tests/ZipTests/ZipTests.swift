@@ -35,6 +35,8 @@ final class ZipTests: XCTestCase {
     func testQuickUnzip() throws {
         let filePath = url(forResource: "bb8", withExtension: "zip")!
         print("❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ - filePath: \(filePath.path)")
+        print(#file)
+        print(#filePath)
         let destinationURL = try Zip.quickUnzipFile(filePath)
         addTeardownBlock {
             try? FileManager.default.removeItem(at: destinationURL)
