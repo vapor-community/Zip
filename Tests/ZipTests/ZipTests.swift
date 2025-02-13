@@ -12,9 +12,7 @@ import XCTest
 
 final class ZipTests: XCTestCase {
     private func url(forResource resource: String, withExtension ext: String? = nil) -> URL? {
-        let resourcePath = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()
-            .appendingPathComponent("TestResources")
+        let resourcePath = URL(fileURLWithPath: "\(FileManager.default.currentDirectoryPath)/Tests/ZipTests/TestResources/")
             .appendingPathComponent(resource)
         return ext.map { resourcePath.appendingPathExtension($0) } ?? resourcePath
     }
