@@ -12,11 +12,7 @@ import XCTest
 
 final class ZipTests: XCTestCase {
     private func url(forResource resource: String, withExtension ext: String? = nil) -> URL? {
-        let resourcePath = URL(fileURLWithPath: #filePath)
-            .deletingLastPathComponent()
-            .appendingPathComponent("TestResources")
-            .appendingPathComponent(resource)
-        return ext.map { resourcePath.appendingPathExtension($0) } ?? resourcePath
+        Bundle.module.url(forResource: "TestResources/\(resource)", withExtension: ext)
     }
 
     private func autoRemovingSandbox() throws -> URL {
@@ -183,6 +179,8 @@ final class ZipTests: XCTestCase {
             let expectedPermissions = 0o700
         #elseif os(Windows) && compiler(>=6.0)
             let expectedPermissions = 0o600
+        #elseif os(Android)
+            let expectedPermissions = 0o666
         #else
             let expectedPermissions = 0o644
         #endif
