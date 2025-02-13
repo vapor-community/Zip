@@ -36,6 +36,7 @@ final class ZipTests: XCTestCase {
 
     func testQuickUnzip() throws {
         let filePath = url(forResource: "bb8", withExtension: "zip")!
+        print("❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ - filePath: \(filePath.path)")
         let destinationURL = try Zip.quickUnzipFile(filePath)
         addTeardownBlock {
             try? FileManager.default.removeItem(at: destinationURL)
@@ -293,6 +294,7 @@ final class ZipTests: XCTestCase {
         let emptyArchiveFile = ArchiveFile(filename: "empty.txt", data: Data())
         let sandboxFolder = try autoRemovingSandbox()
         let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
+        print("❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌❌ - zipFilePath: \(zipFilePath.path)")
         try Zip.zipData(archiveFiles: [archiveFile1, archiveFile2, emptyArchiveFile], zipFilePath: zipFilePath)
         XCTAssertTrue(FileManager.default.fileExists(atPath: zipFilePath.path))
     }
