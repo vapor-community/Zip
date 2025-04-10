@@ -51,6 +51,7 @@ var swiftSettings: [SwiftSetting] {
         .enableUpcomingFeature("DisableOutwardActorInference"),
         .enableUpcomingFeature("StrictConcurrency"),
         .enableExperimentalFeature("StrictConcurrency=complete"),
+        .enableExperimentalFeature("AccessLevelOnImport"),
     ]
 }
 
