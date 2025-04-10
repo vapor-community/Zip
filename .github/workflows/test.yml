@@ -33,6 +33,11 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 60
     steps:
+      - name: Configure dev environment
+        uses: compnerd/gha-setup-vsdevenv@main
+        with:
+          toolset_version: 14.29
+          winsdk: 10.0.22621.0
       - name: Install Windows Swift toolchain
         uses: compnerd/gha-setup-swift@main
         with:
