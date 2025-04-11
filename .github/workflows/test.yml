@@ -60,4 +60,4 @@ jobs:
         uses: actions/checkout@v4
       - name: Run unit tests
         run: |
-          swift test -Xcc -I'C:/Program Files (x86)/zlib/include' -Xlinker -L'C:/Program Files (x86)/zlib/lib' -Xbuild-tools-swiftc -windows-sdk-root -Xbuild-tools-swiftc "${env:WindowsSdkDir}" -Xbuild-tools-swiftc -windows-sdk-version -Xbuild-tools-swiftc ${env:UCRTVersion} -Xswiftc -windows-sdk-root -Xswiftc "${env:WindowsSdkDir}" -Xswiftc -windows-sdk-version -Xswiftc ${env:UCRTVersion}
+          swift test -Xcc -I'C:/Program Files (x86)/zlib/include' -Xcc -DINT128_MAX=170141183460469231731687303715884105727 -Xlinker -L'C:/Program Files (x86)/zlib/lib' -Xbuild-tools-swiftc -windows-sdk-root -Xbuild-tools-swiftc "${env:WindowsSdkDir}" -Xbuild-tools-swiftc -windows-sdk-version -Xbuild-tools-swiftc ${env:UCRTVersion} -Xswiftc -windows-sdk-root -Xswiftc "${env:WindowsSdkDir}" -Xswiftc -windows-sdk-version -Xswiftc ${env:UCRTVersion}
