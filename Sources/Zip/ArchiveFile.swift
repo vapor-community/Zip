@@ -1,4 +1,4 @@
-@_implementationOnly import CMinizip
+private import CMinizip
 import Foundation
 
 /// Defines data saved in memory that will be archived as a file.

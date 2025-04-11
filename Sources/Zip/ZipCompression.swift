@@ -1,4 +1,4 @@
-@_implementationOnly import CMinizip
+private import CMinizip
 
 /// Zip compression strategies.
 public enum ZipCompression: Int {

@@ -1,4 +1,4 @@
-// swift-tools-version:5.9
+// swift-tools-version:5.10
 import PackageDescription
 
 #if canImport(Darwin) || compiler(<6.0)
@@ -51,6 +51,7 @@ var swiftSettings: [SwiftSetting] {
         .enableUpcomingFeature("DisableOutwardActorInference"),
         .enableUpcomingFeature("StrictConcurrency"),
         .enableExperimentalFeature("StrictConcurrency=complete"),
+        .enableExperimentalFeature("AccessLevelOnImport"),
     ]
 }
 

@@ -31,7 +31,7 @@ and add it to your target's dependencies:
 
 ### Supported Platforms
 
-Zip supports all platforms supported by Swift 5.9 and later.
+Zip supports all platforms supported by Swift 5.10 and later.
 
 To use Zip on Windows, you need to pass an available build of `zlib` to the build via extended flags. For example:
 

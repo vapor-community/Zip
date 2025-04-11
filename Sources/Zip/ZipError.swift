@@ -1,4 +1,8 @@
-import Foundation
+#if canImport(Darwin) || compiler(<6.0)
+    import Foundation
+#else
+    import FoundationEssentials
+#endif
 
 /// Errors that can be thrown by Zip.
 public enum ZipError: Error {
@@ -12,9 +16,9 @@ public enum ZipError: Error {
     /// A textual representation of this error.
     public var description: String {
         switch self {
-        case .fileNotFound: return NSLocalizedString("File not found.", comment: "")
-        case .unzipFail: return NSLocalizedString("Failed to unzip file.", comment: "")
-        case .zipFail: return NSLocalizedString("Failed to zip file.", comment: "")
+        case .fileNotFound: "File not found."
+        case .unzipFail: "Failed to unzip file."
+        case .zipFail: "Failed to zip file."
         }
     }
 }

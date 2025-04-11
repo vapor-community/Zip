@@ -12,7 +12,7 @@
         <img src="https://img.shields.io/codecov/c/github/vapor-community/Zip?style=plastic&logo=codecov&label=codecov">
     </a>
     <a href="https://swift.org">
-        <img src="https://design.vapor.codes/images/swift59up.svg" alt="Swift 5.9+">
+        <img src="https://design.vapor.codes/images/swift59up.svg" alt="Swift 5.10+">
     </a>
 </div>
 <br>
@@ -40,7 +40,7 @@ and add it to your target's dependencies:
 
 ### Supported Platforms
 
-Zip supports all platforms supported by Swift 5.9 and later.
+Zip supports all platforms supported by Swift 5.10 and later.
 
 To use Zip on Windows, you need to pass an available build of `zlib` to the build via extended flags. For example:
 

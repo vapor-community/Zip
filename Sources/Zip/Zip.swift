@@ -6,17 +6,13 @@
 //  Copyright © 2015 Roy Marmelstein. All rights reserved.
 //
 
-@_implementationOnly import CMinizip
+private import CMinizip
 import Foundation
 
 /// Main class that handles zipping and unzipping of files.
 public class Zip {
     // Set of vaild file extensions
-    #if compiler(>=5.10)
-        nonisolated(unsafe) private static var customFileExtensions: Set<String> = []
-    #else
-        private static var customFileExtensions: Set<String> = []
-    #endif
+    nonisolated(unsafe) private static var customFileExtensions: Set<String> = []
     private static let lock = NSLock()
 
     @available(*, deprecated, message: "Do not use this initializer. Zip is a utility class and should not be instantiated.")
