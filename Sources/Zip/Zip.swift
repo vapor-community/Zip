@@ -136,16 +136,11 @@ public class Zip {
                 throw ZipError.unzipFail
             }
 
-            let directoryAttributes: [FileAttributeKey: Any]?
-            #if (os(Linux) || os(Windows)) && compiler(<6.0)
-            directoryAttributes = nil
-            #else
             let creationDate = Date()
-            directoryAttributes = [
+            let directoryAttributes: [FileAttributeKey: Any]? = [
                 .creationDate: creationDate,
                 .modificationDate: creationDate,
             ]
-            #endif
 
             let isDirectory =
                 fileName[Int(fileInfo.size_filename - 1)] == "/".cString(using: String.Encoding.utf8)?.first
