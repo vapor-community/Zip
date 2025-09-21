@@ -9,14 +9,10 @@ public enum ZipCompression: Int {
 
     internal var minizipCompression: Int32 {
         switch self {
-        case .NoCompression:
-            return Z_NO_COMPRESSION
-        case .BestSpeed:
-            return Z_BEST_SPEED
-        case .DefaultCompression:
-            return Z_DEFAULT_COMPRESSION
-        case .BestCompression:
-            return Z_BEST_COMPRESSION
+        case .NoCompression: Z_NO_COMPRESSION
+        case .BestSpeed: Z_BEST_SPEED
+        case .DefaultCompression: Z_DEFAULT_COMPRESSION
+        case .BestCompression: Z_BEST_COMPRESSION
         }
     }
 }

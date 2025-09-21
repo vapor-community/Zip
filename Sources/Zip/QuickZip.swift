@@ -23,7 +23,7 @@ extension Zip {
     ///
     /// - Returns: `URL` of the destination folder.
     public class func quickUnzipFile(_ path: URL) throws -> URL {
-        return try quickUnzipFile(path, progress: nil)
+        try quickUnzipFile(path, progress: nil)
     }
 
     /// Unzips a file with less configuration.
@@ -57,7 +57,7 @@ extension Zip {
     ///
     /// - Returns: `URL` of the destination folder.
     public class func quickZipFiles(_ paths: [URL], fileName: String) throws -> URL {
-        return try quickZipFiles(paths, fileName: fileName, progress: nil)
+        try quickZipFiles(paths, fileName: fileName, progress: nil)
     }
 
     /// Zips files with less configuration.

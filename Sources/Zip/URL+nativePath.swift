@@ -6,6 +6,6 @@ import Foundation
 
 extension URL {
     var nativePath: String {
-        return withUnsafeFileSystemRepresentation { String(cString: $0!) }
+        withUnsafeFileSystemRepresentation { String(cString: $0!) }
     }
 }
