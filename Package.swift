@@ -1,10 +1,10 @@
-// swift-tools-version:5.10
+// swift-tools-version:6.0
 import PackageDescription
 
-#if canImport(Darwin) || compiler(<6.0)
-    import Foundation
+#if canImport(FoundationEssentials)
+import FoundationEssentials
 #else
-    import FoundationEssentials
+import Foundation
 #endif
 
 let package = Package(
@@ -45,25 +45,19 @@ let package = Package(
 
 var swiftSettings: [SwiftSetting] {
     [
-        .enableUpcomingFeature("ExistentialAny"),
-        .enableUpcomingFeature("ConciseMagicFile"),
-        .enableUpcomingFeature("ForwardTrailingClosures"),
-        .enableUpcomingFeature("DisableOutwardActorInference"),
-        .enableUpcomingFeature("StrictConcurrency"),
-        .enableExperimentalFeature("StrictConcurrency=complete"),
-        .enableExperimentalFeature("AccessLevelOnImport"),
+        .enableUpcomingFeature("ExistentialAny")
     ]
 }
 
 if let target = package.targets.filter({ $0.name == "CMinizip" }).first {
     #if os(Windows)
-        if ProcessInfo.processInfo.environment["ZIP_USE_DYNAMIC_ZLIB"] == nil {
-            target.cSettings?.append(contentsOf: [.define("ZLIB_STATIC")])
-            target.linkerSettings = [.linkedLibrary("zlibstatic")]
-        } else {
-            target.linkerSettings = [.linkedLibrary("zlib")]
-        }
+    if ProcessInfo.processInfo.environment["ZIP_USE_DYNAMIC_ZLIB"] == nil {
+        target.cSettings?.append(contentsOf: [.define("ZLIB_STATIC")])
+        target.linkerSettings = [.linkedLibrary("zlibstatic")]
+    } else {
+        target.linkerSettings = [.linkedLibrary("zlib")]
+    }
     #else
-        target.linkerSettings = [.linkedLibrary("z")]
+    target.linkerSettings = [.linkedLibrary("z")]
     #endif
 }

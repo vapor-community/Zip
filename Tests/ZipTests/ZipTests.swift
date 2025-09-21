@@ -176,13 +176,13 @@ final class ZipTests: XCTestCase {
         let permission644 = unzipDestination.appendingPathComponent("unsupported_permission").appendingPathExtension("txt")
         let foundPermissions = try FileManager.default.attributesOfItem(atPath: permission644.path)[.posixPermissions] as? Int
         #if os(Windows) && compiler(<6.0)
-            let expectedPermissions = 0o700
+        let expectedPermissions = 0o700
         #elseif os(Windows) && compiler(>=6.0)
-            let expectedPermissions = 0o600
+        let expectedPermissions = 0o600
         #elseif os(Android)
-            let expectedPermissions = 0o666
+        let expectedPermissions = 0o666
         #else
-            let expectedPermissions = 0o644
+        let expectedPermissions = 0o644
         #endif
         XCTAssertNotNil(foundPermissions)
         XCTAssertEqual(
@@ -207,17 +207,17 @@ final class ZipTests: XCTestCase {
         let attributes600 = try fileManager.attributesOfItem(atPath: permission600.path)
         let attributes604 = try fileManager.attributesOfItem(atPath: permission604.path)
         #if os(Windows) && compiler(<6.0)
-            XCTAssertEqual(attributes777[.posixPermissions] as? Int, 0o700)
-            XCTAssertEqual(attributes600[.posixPermissions] as? Int, 0o700)
-            XCTAssertEqual(attributes604[.posixPermissions] as? Int, 0o700)
+        XCTAssertEqual(attributes777[.posixPermissions] as? Int, 0o700)
+        XCTAssertEqual(attributes600[.posixPermissions] as? Int, 0o700)
+        XCTAssertEqual(attributes604[.posixPermissions] as? Int, 0o700)
         #elseif os(Windows) && compiler(>=6.0)
-            XCTAssertEqual(attributes777[.posixPermissions] as? Int, 0o600)
-            XCTAssertEqual(attributes600[.posixPermissions] as? Int, 0o600)
-            XCTAssertEqual(attributes604[.posixPermissions] as? Int, 0o600)
+        XCTAssertEqual(attributes777[.posixPermissions] as? Int, 0o600)
+        XCTAssertEqual(attributes600[.posixPermissions] as? Int, 0o600)
+        XCTAssertEqual(attributes604[.posixPermissions] as? Int, 0o600)
         #else
-            XCTAssertEqual(attributes777[.posixPermissions] as? Int, 0o777)
-            XCTAssertEqual(attributes600[.posixPermissions] as? Int, 0o600)
-            XCTAssertEqual(attributes604[.posixPermissions] as? Int, 0o604)
+        XCTAssertEqual(attributes777[.posixPermissions] as? Int, 0o777)
+        XCTAssertEqual(attributes600[.posixPermissions] as? Int, 0o600)
+        XCTAssertEqual(attributes604[.posixPermissions] as? Int, 0o604)
         #endif
     }
 
@@ -408,62 +408,62 @@ final class ZipTests: XCTestCase {
     }
 
     #if os(Windows)
-        func testWindowsReservedChars() throws {
-            let txtFile = ArchiveFile(filename: "a_b.txt", data: "Hi Mom!".data(using: .utf8)!)
-            let txtFile1 = ArchiveFile(filename: "a<b.txt", data: "Hello, Zip!".data(using: .utf8)!)
-            let txtFile2 = ArchiveFile(filename: "a>b.txt", data: "Hello, Swift!".data(using: .utf8)!)
-            let txtFile3 = ArchiveFile(filename: "a:b.txt", data: "Hello, World!".data(using: .utf8)!)
-            let txtFile4 = ArchiveFile(filename: "a\"b.txt", data: "Hi Windows!".data(using: .utf8)!)
-            let txtFile5 = ArchiveFile(filename: "a|b.txt", data: "Hi Barbie!".data(using: .utf8)!)
-            let txtFile6 = ArchiveFile(filename: "a?b.txt", data: "Hi, Ken!".data(using: .utf8)!)
-            let txtFile7 = ArchiveFile(filename: "a*b.txt", data: "Hello Everyone!".data(using: .utf8)!)
+    func testWindowsReservedChars() throws {
+        let txtFile = ArchiveFile(filename: "a_b.txt", data: "Hi Mom!".data(using: .utf8)!)
+        let txtFile1 = ArchiveFile(filename: "a<b.txt", data: "Hello, Zip!".data(using: .utf8)!)
+        let txtFile2 = ArchiveFile(filename: "a>b.txt", data: "Hello, Swift!".data(using: .utf8)!)
+        let txtFile3 = ArchiveFile(filename: "a:b.txt", data: "Hello, World!".data(using: .utf8)!)
+        let txtFile4 = ArchiveFile(filename: "a\"b.txt", data: "Hi Windows!".data(using: .utf8)!)
+        let txtFile5 = ArchiveFile(filename: "a|b.txt", data: "Hi Barbie!".data(using: .utf8)!)
+        let txtFile6 = ArchiveFile(filename: "a?b.txt", data: "Hi, Ken!".data(using: .utf8)!)
+        let txtFile7 = ArchiveFile(filename: "a*b.txt", data: "Hello Everyone!".data(using: .utf8)!)
 
-            let file = ArchiveFile(filename: "a_b", data: "Hello, World!".data(using: .utf8)!)
-            let file1 = ArchiveFile(filename: "a<b", data: "Hello, Zip!".data(using: .utf8)!)
-            let file2 = ArchiveFile(filename: "a>b", data: "Hello, Swift!".data(using: .utf8)!)
-            let file3 = ArchiveFile(filename: "a:b", data: "Hello, World!".data(using: .utf8)!)
+        let file = ArchiveFile(filename: "a_b", data: "Hello, World!".data(using: .utf8)!)
+        let file1 = ArchiveFile(filename: "a<b", data: "Hello, Zip!".data(using: .utf8)!)
+        let file2 = ArchiveFile(filename: "a>b", data: "Hello, Swift!".data(using: .utf8)!)
+        let file3 = ArchiveFile(filename: "a:b", data: "Hello, World!".data(using: .utf8)!)
 
-            let sandboxFolder = try autoRemovingSandbox()
-            let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
-            try Zip.zipData(
-                archiveFiles: [
-                    txtFile, txtFile1, txtFile2, txtFile3, txtFile4, txtFile5, txtFile6, txtFile7,
-                    file, file1, file2, file3,
-                ],
-                zipFilePath: zipFilePath
-            )
+        let sandboxFolder = try autoRemovingSandbox()
+        let zipFilePath = sandboxFolder.appendingPathComponent("archive.zip")
+        try Zip.zipData(
+            archiveFiles: [
+                txtFile, txtFile1, txtFile2, txtFile3, txtFile4, txtFile5, txtFile6, txtFile7,
+                file, file1, file2, file3,
+            ],
+            zipFilePath: zipFilePath
+        )
 
-            let destinationPath = try autoRemovingSandbox()
-            try Zip.unzipFile(zipFilePath, destination: destinationPath)
+        let destinationPath = try autoRemovingSandbox()
+        try Zip.unzipFile(zipFilePath, destination: destinationPath)
 
-            let txtFileURL = destinationPath.appendingPathComponent("a_b.txt")
-            let txtFile1URL = destinationPath.appendingPathComponent("a_b (1).txt")
-            let txtFile2URL = destinationPath.appendingPathComponent("a_b (2).txt")
-            let txtFile3URL = destinationPath.appendingPathComponent("a_b (3).txt")
-            let txtFile4URL = destinationPath.appendingPathComponent("a_b (4).txt")
-            let txtFile5URL = destinationPath.appendingPathComponent("a_b (5).txt")
-            let txtFile6URL = destinationPath.appendingPathComponent("a_b (6).txt")
-            let txtFile7URL = destinationPath.appendingPathComponent("a_b (7).txt")
+        let txtFileURL = destinationPath.appendingPathComponent("a_b.txt")
+        let txtFile1URL = destinationPath.appendingPathComponent("a_b (1).txt")
+        let txtFile2URL = destinationPath.appendingPathComponent("a_b (2).txt")
+        let txtFile3URL = destinationPath.appendingPathComponent("a_b (3).txt")
+        let txtFile4URL = destinationPath.appendingPathComponent("a_b (4).txt")
+        let txtFile5URL = destinationPath.appendingPathComponent("a_b (5).txt")
+        let txtFile6URL = destinationPath.appendingPathComponent("a_b (6).txt")
+        let txtFile7URL = destinationPath.appendingPathComponent("a_b (7).txt")
 
-            let fileURL = destinationPath.appendingPathComponent("a_b")
-            let file1URL = destinationPath.appendingPathComponent("a_b (1)")
-            let file2URL = destinationPath.appendingPathComponent("a_b (2)")
-            let file3URL = destinationPath.appendingPathComponent("a_b (3)")
+        let fileURL = destinationPath.appendingPathComponent("a_b")
+        let file1URL = destinationPath.appendingPathComponent("a_b (1)")
+        let file2URL = destinationPath.appendingPathComponent("a_b (2)")
+        let file3URL = destinationPath.appendingPathComponent("a_b (3)")
 
-            XCTAssertTrue(FileManager.default.fileExists(atPath: txtFileURL.path))
-            XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile1URL.path))
-            XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile2URL.path))
-            XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile3URL.path))
-            XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile4URL.path))
-            XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile5URL.path))
-            XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile6URL.path))
-            XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile7URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFileURL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile1URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile2URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile3URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile4URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile5URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile6URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: txtFile7URL.path))
 
-            XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
-            XCTAssertTrue(FileManager.default.fileExists(atPath: file1URL.path))
-            XCTAssertTrue(FileManager.default.fileExists(atPath: file2URL.path))
-            XCTAssertTrue(FileManager.default.fileExists(atPath: file3URL.path))
-        }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: fileURL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: file1URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: file2URL.path))
+        XCTAssertTrue(FileManager.default.fileExists(atPath: file3URL.path))
+    }
     #endif
 
     func testPassKitExtensions() throws {

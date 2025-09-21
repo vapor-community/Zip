@@ -6,10 +6,10 @@
 //  Copyright © 2016 Roy Marmelstein. All rights reserved.
 //
 
-#if canImport(Darwin) || compiler(<6.0)
-    import Foundation
+#if canImport(FoundationEssentials)
+import FoundationEssentials
 #else
-    import FoundationEssentials
+import Foundation
 #endif
 
 extension Zip {
