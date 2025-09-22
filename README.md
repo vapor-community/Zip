@@ -9,7 +9,7 @@
         <img src="https://img.shields.io/github/actions/workflow/status/vapor-community/Zip/test.yml?event=push&style=plastic&logo=github&label=tests&logoColor=%23ccc" alt="Continuous Integration">
     </a>
     <a href="https://codecov.io/github/vapor-community/Zip">
-        <img src="https://img.shields.io/codecov/c/github/vapor-community/Zip?style=plastic&logo=codecov&label=codecov">
+        <img src="https://img.shields.io/codecov/c/github/vapor-community/Zip?style=plastic&logo=codecov&label=codecov" alt="Code Coverage">
     </a>
     <a href="https://swift.org">
         <img src="https://design.vapor.codes/images/swift60up.svg" alt="Swift 6.0+">

@@ -43,7 +43,7 @@ var swiftSettings: [SwiftSetting] {
     ]
 }
 
-if let target = package.targets.filter({ $0.name == "CMinizip" }).first {
+if let target = package.targets.first(where: { $0.name == "CMinizip" }) {
     #if os(Windows)
     if Context.environment["ZIP_USE_DYNAMIC_ZLIB"] == nil {
         target.cSettings?.append(contentsOf: [.define("ZLIB_STATIC")])
