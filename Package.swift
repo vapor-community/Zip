@@ -1,12 +1,6 @@
 // swift-tools-version:6.0
 import PackageDescription
 
-#if canImport(FoundationEssentials)
-import FoundationEssentials
-#else
-import Foundation
-#endif
-
 let package = Package(
     name: "Zip",
     products: [
