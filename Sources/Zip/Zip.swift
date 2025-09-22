@@ -66,7 +66,7 @@ public class Zip {
         }
 
         #if os(Windows)
-            var fileNames = Set<String>()
+        var fileNames = Set<String>()
         #endif
 
         var buffer = [CUnsignedChar](repeating: 0, count: 4096)
@@ -101,23 +101,23 @@ public class Zip {
             var pathString = String(cString: fileName)
 
             #if os(Windows)
-                // Windows Reserved Characters
-                let reservedCharacters: CharacterSet = ["<", ">", ":", "\"", "|", "?", "*"]
+            // Windows Reserved Characters
+            let reservedCharacters: CharacterSet = ["<", ">", ":", "\"", "|", "?", "*"]
 
-                if pathString.rangeOfCharacter(from: reservedCharacters) != nil {
-                    pathString = pathString.components(separatedBy: reservedCharacters).joined(separator: "_")
+            if pathString.rangeOfCharacter(from: reservedCharacters) != nil {
+                pathString = pathString.components(separatedBy: reservedCharacters).joined(separator: "_")
 
-                    let pathExtension = (pathString as NSString).pathExtension
-                    let pathWithoutExtension = (pathString as NSString).deletingPathExtension
-                    var counter = 1
-                    while fileNames.contains(pathString) {
-                        let newFileName = "\(pathWithoutExtension) (\(counter))"
-                        pathString = pathExtension.isEmpty ? newFileName : newFileName.appendingPathExtension(pathExtension) ?? newFileName
-                        counter += 1
-                    }
+                let pathExtension = (pathString as NSString).pathExtension
+                let pathWithoutExtension = (pathString as NSString).deletingPathExtension
+                var counter = 1
+                while fileNames.contains(pathString) {
+                    let newFileName = "\(pathWithoutExtension) (\(counter))"
+                    pathString = pathExtension.isEmpty ? newFileName : newFileName.appendingPathExtension(pathExtension) ?? newFileName
+                    counter += 1
                 }
+            }
 
-                fileNames.insert(pathString)
+            fileNames.insert(pathString)
             #endif
 
             guard !pathString.isEmpty else {
@@ -136,16 +136,11 @@ public class Zip {
                 throw ZipError.unzipFail
             }
 
-            let directoryAttributes: [FileAttributeKey: Any]?
-            #if (os(Linux) || os(Windows)) && compiler(<6.0)
-                directoryAttributes = nil
-            #else
-                let creationDate = Date()
-                directoryAttributes = [
-                    .creationDate: creationDate,
-                    .modificationDate: creationDate,
-                ]
-            #endif
+            let creationDate = Date()
+            let directoryAttributes: [FileAttributeKey: Any]? = [
+                .creationDate: creationDate,
+                .modificationDate: creationDate,
+            ]
 
             let isDirectory =
                 fileName[Int(fileInfo.size_filename - 1)] == "/".cString(using: String.Encoding.utf8)?.first

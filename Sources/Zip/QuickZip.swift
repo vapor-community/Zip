@@ -6,10 +6,10 @@
 //  Copyright © 2016 Roy Marmelstein. All rights reserved.
 //
 
-#if canImport(Darwin) || compiler(<6.0)
-    import Foundation
+#if canImport(FoundationEssentials)
+import FoundationEssentials
 #else
-    import FoundationEssentials
+import Foundation
 #endif
 
 extension Zip {
@@ -23,7 +23,7 @@ extension Zip {
     ///
     /// - Returns: `URL` of the destination folder.
     public class func quickUnzipFile(_ path: URL) throws -> URL {
-        return try quickUnzipFile(path, progress: nil)
+        try quickUnzipFile(path, progress: nil)
     }
 
     /// Unzips a file with less configuration.
@@ -57,7 +57,7 @@ extension Zip {
     ///
     /// - Returns: `URL` of the destination folder.
     public class func quickZipFiles(_ paths: [URL], fileName: String) throws -> URL {
-        return try quickZipFiles(paths, fileName: fileName, progress: nil)
+        try quickZipFiles(paths, fileName: fileName, progress: nil)
     }
 
     /// Zips files with less configuration.

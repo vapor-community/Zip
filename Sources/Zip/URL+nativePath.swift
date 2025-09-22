@@ -1,11 +1,11 @@
-#if canImport(Darwin) || compiler(<6.0)
-    import Foundation
+#if canImport(FoundationEssentials)
+import FoundationEssentials
 #else
-    import FoundationEssentials
+import Foundation
 #endif
 
 extension URL {
     var nativePath: String {
-        return withUnsafeFileSystemRepresentation { String(cString: $0!) }
+        withUnsafeFileSystemRepresentation { String(cString: $0!) }
     }
 }
