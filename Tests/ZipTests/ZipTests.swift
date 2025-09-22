@@ -65,8 +65,8 @@ struct ZipTests {
             try? FileManager.default.removeItem(at: destinationURL)
         }
         #expect(FileManager.default.fileExists(atPath: destinationURL.path))
-        #expect(try Data(contentsOf: destinationURL.appendingPathComponent("3crBXeO.gif")).count > 0)
-        #expect(try Data(contentsOf: destinationURL.appendingPathComponent("kYkLkPf.gif")).count > 0)
+        #expect(try !Data(contentsOf: destinationURL.appendingPathComponent("3crBXeO.gif")).isEmpty)
+        #expect(try !Data(contentsOf: destinationURL.appendingPathComponent("kYkLkPf.gif")).isEmpty)
     }
 
     @Test("Quick Unzip with Online URL")
@@ -85,8 +85,8 @@ struct ZipTests {
             }
 
             #expect(FileManager.default.fileExists(atPath: destinationPath.path))
-            try #expect(Data(contentsOf: destinationPath.appendingPathComponent("3crBXeO.gif")).count > 0)
-            try #expect(Data(contentsOf: destinationPath.appendingPathComponent("kYkLkPf.gif")).count > 0)
+            try #expect(!Data(contentsOf: destinationPath.appendingPathComponent("3crBXeO.gif")).isEmpty)
+            try #expect(!Data(contentsOf: destinationPath.appendingPathComponent("kYkLkPf.gif")).isEmpty)
         }
     }
 
@@ -131,7 +131,7 @@ struct ZipTests {
             try? FileManager.default.removeItem(at: destinationURL)
         }
         #expect(FileManager.default.fileExists(atPath: destinationURL.path))
-        #expect(try Data(contentsOf: destinationURL).count > 0)
+        #expect(try !Data(contentsOf: destinationURL).isEmpty)
     }
 
     @Test("Quick Zip with Progress")
@@ -145,7 +145,7 @@ struct ZipTests {
             try? FileManager.default.removeItem(at: destinationURL)
         }
         #expect(FileManager.default.fileExists(atPath: destinationURL.path))
-        #expect(try Data(contentsOf: destinationURL).count > 0)
+        #expect(try !Data(contentsOf: destinationURL).isEmpty)
     }
 
     @Test("Quick Zip Folder")
@@ -399,8 +399,8 @@ struct ZipTests {
                 )
             }
             #expect(FileManager.default.fileExists(atPath: destinationPath.path))
-            try #expect(Data(contentsOf: destinationPath.appendingPathComponent("3crBXeO.gif")).count > 0)
-            try #expect(Data(contentsOf: destinationPath.appendingPathComponent("kYkLkPf.gif")).count > 0)
+            try #expect(!Data(contentsOf: destinationPath.appendingPathComponent("3crBXeO.gif")).isEmpty)
+            try #expect(!Data(contentsOf: destinationPath.appendingPathComponent("kYkLkPf.gif")).isEmpty)
         }
     }
 
@@ -427,7 +427,7 @@ struct ZipTests {
             #expect(FileManager.default.fileExists(atPath: destinationFolder.appendingPathComponent("metadata.json").path))
             #expect(FileManager.default.fileExists(atPath: destinationFolder.appendingPathComponent("main/index.html").path))
             #expect(FileManager.default.fileExists(atPath: destinationFolder.appendingPathComponent("main/index/index.json").path))
-            #expect(try Data(contentsOf: destinationFolder.appendingPathComponent("metadata.json")).count > 0)
+            #expect(try !Data(contentsOf: destinationFolder.appendingPathComponent("metadata.json")).isEmpty)
 
             let unzippedFiles = try FileManager.default.contentsOfDirectory(atPath: destinationFolder.path)
 
@@ -444,7 +444,7 @@ struct ZipTests {
                     #expect(
                         FileManager.default.fileExists(atPath: newDestinationFolder.appendingPathComponent("main/index/index.json").path)
                     )
-                    #expect(try Data(contentsOf: newDestinationFolder.appendingPathComponent("metadata.json")).count > 0)
+                    #expect(try !Data(contentsOf: newDestinationFolder.appendingPathComponent("metadata.json")).isEmpty)
 
                     let newUnzippedFiles = try FileManager.default.contentsOfDirectory(atPath: newDestinationFolder.path)
                     #expect(unzippedFiles == newUnzippedFiles)
