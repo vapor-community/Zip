@@ -39,8 +39,8 @@ struct ZipTests {
             try? FileManager.default.removeItem(at: destinationURL)
         }
         #expect(FileManager.default.fileExists(atPath: destinationURL.path))
-        #expect(try Data(contentsOf: destinationURL.appendingPathComponent("3crBXeO.gif")).count > 0)
-        #expect(try Data(contentsOf: destinationURL.appendingPathComponent("kYkLkPf.gif")).count > 0)
+        #expect(try !Data(contentsOf: destinationURL.appendingPathComponent("3crBXeO.gif")).isEmpty)
+        #expect(try !Data(contentsOf: destinationURL.appendingPathComponent("kYkLkPf.gif")).isEmpty)
     }
 
     @Test("Quick Unzip with Non-Existing Path")
