@@ -57,7 +57,7 @@ jobs:
           cmake --build . --config Release
           cmake --install . --prefix ../install
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: Run unit tests
         run: |
           swift test -Xcc -I'C:/Program Files (x86)/zlib/include' -Xcc -D_INTSAFE_H_INCLUDED_ -Xlinker -L'C:/Program Files (x86)/zlib/lib' -Xbuild-tools-swiftc -windows-sdk-root -Xbuild-tools-swiftc "${env:WindowsSdkDir}" -Xbuild-tools-swiftc -windows-sdk-version -Xbuild-tools-swiftc ${env:UCRTVersion} -Xswiftc -windows-sdk-root -Xswiftc "${env:WindowsSdkDir}" -Xswiftc -windows-sdk-version -Xswiftc ${env:UCRTVersion}
